@@ -34,11 +34,11 @@ class Webcam:
         #TODO asignar el minimo del canny mas alto para que no haya tanto ruido
         
         #Establecemos los rangos de las sliders
-        self.MainWindow.canny_slide.setRange(0,150)
-        self.MainWindow.canny.setRange(0,150)
+        self.MainWindow.canny_slide.setRange(30,150)
+        self.MainWindow.canny.setRange(30,150)
 
-        self.MainWindow.canny_slide1.setRange(0,150)
-        self.MainWindow.canny1.setRange(0,150)
+        self.MainWindow.canny_slide1.setRange(30,150)
+        self.MainWindow.canny1.setRange(30,150)
 
         #Conectamos los sliders con sus cajitas
         self.MainWindow.canny_slide.valueChanged.connect(self.change_canny)
@@ -70,8 +70,13 @@ class Webcam:
         #Asignamos al vídeo 1 la imagen con filtro gaussiano y canny
         #self.cv_video[1] = cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)
         self.cv_video[1] = cv2.GaussianBlur(entrada, (5,5),0)
-        #self.cv_video[1] = cv2.Canny(self.cv_video[1], self.MainWindow.canny_slide.value(), self.MainWindow.canny_slide1.value())
-        self.cv_video[1] = cv2.findContours(self.cv_video[1], cv2.RETR_FLOODFILL, cv2.CHAIN_APPROX_TC89_L1)
+        self.cv_video[1] = cv2.Canny(self.cv_video[1], self.MainWindow.canny_slide.value(), self.MainWindow.canny_slide1.value())
+
+        #Adquirimos el vector con los puntos de los contornos
+        contours, _hierarchy = cv2.findContours(self.cv_video[1], cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+
+
 
     def show_frames(self):
         for i in range(len(self.qt_video)):

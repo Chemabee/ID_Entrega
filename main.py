@@ -36,8 +36,14 @@ class Webcam:
         #Establecemos los rangos de las sliders
         self.MainWindow.canny_slide.setRange(0,150)
         self.MainWindow.canny.setRange(0,150)
+
+        self.MainWindow.canny_slide1.setRange(0,150)
+        self.MainWindow.canny1.setRange(0,150)
+
         #Conectamos los sliders con sus cajitas
         self.MainWindow.canny_slide.valueChanged.connect(self.change_canny)
+        self.MainWindow.canny_slide1.valueChanged.connect(self.change_canny)
+
 
         #Timer para refrescar el filtro e imagen
         self.timer_filter = QtCore.QTimer(self.MainWindow);
@@ -49,9 +55,9 @@ class Webcam:
         self.timer_frames.start(3);
 
     #Métodos para conectar los sliders con los números en la cajita
-    def change_canny(self):
+    def change_canny(self, num):
         self.MainWindow.canny.setValue(self.MainWindow.canny_slide.value())
-
+        self.MainWindow.canny1.setValue(self.MainWindow.canny_slide1.value())
     def make_filter(self):
         #Lee la cámara
         ok,entrada=self.webcam.read()
@@ -64,7 +70,8 @@ class Webcam:
         #Asignamos al vídeo 1 la imagen con filtro gaussiano y canny
         #self.cv_video[1] = cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)
         self.cv_video[1] = cv2.GaussianBlur(entrada, (5,5),0)
-        self.cv_video[1] = cv2.Canny(self.cv_video[1], self.MainWindow.canny.value(), self.MainWindow.canny_slide.value())
+        #self.cv_video[1] = cv2.Canny(self.cv_video[1], self.MainWindow.canny_slide.value(), self.MainWindow.canny_slide1.value())
+        self.cv_video[1] = cv2.findContours(self.cv_video[1], cv2.RETR_FLOODFILL, cv2.CHAIN_APPROX_TC89_L1)
 
     def show_frames(self):
         for i in range(len(self.qt_video)):

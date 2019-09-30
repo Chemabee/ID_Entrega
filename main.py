@@ -9,9 +9,11 @@ import numpy as np
 
 
 MAX_IMG=2
-IDCAM=0
+IDCAM=2
+NUM_LADOS=4
 
 class Webcam:
+
     def __init__(self):
         #Array de los videos
         self.cv_video=[]
@@ -75,19 +77,26 @@ class Webcam:
         #Adquirimos el vector con los puntos de los contornos
         contours, _hierarchy = cv2.findContours(tempV, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         squares = []
+        #Para cada contorno
         for cnt in contours:
+            #Calcula la longitud total del contorno
             cnt_len = cv2.arcLength(cnt, True)
-            cnt = cv2.approxPolyDP(cnt, 0.02*cnt_len, True)
-            if len(cnt) == 4 and cv2.contourArea(cnt) > 1000 and cv2.isContourConvex(cnt):
+            #Aproxima a la silueta mas simple posible
+            cnt = cv2.approxPolyDP(cnt, 0.05*cnt_len, True)
+            #Primero comprueba que tiene 4 puntos, es decir 4 vértices, 4 lados. Despues establece el minimo de tamaño, a menor mas sensible.
+            #Por ultimo comprueba si la silueta es convexa, es decir, no tiene angulos internos > 180 y no tiene diagonales interiores
+            if len(cnt) == NUM_LADOS and cv2.contourArea(cnt) > 1000 and cv2.isContourConvex(cnt):
                 cnt = cnt.reshape(-1, 2)
-                max_cos = np.max([self.angle_cos( cnt[i], cnt[(i+1) % 4], cnt[(i+2) % 4] ) for i in range(4)])
-                if max_cos < 0.1:
+                #Calcula el coseno máximo de entre los 4 puntos de cada silueta, el % es para iterar dando la vuelta a la lista de los 4 puntos
+                max_cos = np.max([self.angle_cos( cnt[i], cnt[(i+1) % NUM_LADOS], cnt[(i+2) % NUM_LADOS] ) for i in range(NUM_LADOS)])
+                #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
+                if max_cos < 0.2:
                     squares.append(cnt)
-        cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 3 )
+        cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
 
     def angle_cos(self, p0, p1, p2):
         d1, d2 = (p0-p1).astype('float'), (p2-p1).astype('float')
-        return abs( np.dot(d1, d2) / np.sqrt( np.dot(d1, d1)*np.dot(d2, d2) ) )
+        return abs( np.dot(d1, d2) / (np.sqrt(np.dot(d1,d1)) * np.sqrt(np.dot(d2,d2))))
 
 
     def show_frames(self):

@@ -94,14 +94,21 @@ class Webcam:
         self.isSquare(squares)
 
     def isSquare(self, squares):
-        var = 0.1
+        var = 5
         for cnt in squares:
-            d1 = np.abs(cnt[0] - cnt[1])
-            d2 = np.abs(cnt[1] - cnt[2])
-            d3 = np.abs(cnt[2] - cnt[3])
-            d4 = np.abs(cnt[3] - cnt[0])
-            lat_aprox = cv2.arcLength(cnt, True)/4
-            if((np.abs(d1-d2) < lat_aprox*var) and (np.abs(d2-d3) < lat_aprox*var) and (np.abs(d3-d4) < lat_aprox*var) and (np.abs(d1-d4) < lat_aprox*var)):
+            #TODO Hacerlo mas pythioniano
+            #d1 = abs(cnt[0] - cnt[1])
+            #d2 = abs(cnt[1] - cnt[2])
+            #d3 = abs(cnt[2] - cnt[3])
+            #d4 = abs(cnt[3] - cnt[0])
+            p1 = cnt[0]
+            p2 = cnt[1]
+            p3 = cnt[2]
+            d1 = abs(abs(p1[0] - p2[0]) - abs(p1[1] - p2[1]))
+            d2 = abs(abs(p2[0] - p3[0]) - abs(p2[1] - p3[1]))
+            #lat_aprox = cv2.arcLength(cnt, True)/4
+            #if((abs(d1-d2) < lat_aprox*var) and (abs(d2-d3) < lat_aprox*var) and (abs(d3-d4) < lat_aprox*var) and (abs(d1-d4) < lat_aprox*var)):
+            if(abs(d1-d2) < var):
                 cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
             else:
                 cv2.drawContours( self.cv_video[1], squares, -1, (0, 0, 255), 4 )

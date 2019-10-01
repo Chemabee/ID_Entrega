@@ -9,7 +9,7 @@ import numpy as np
 
 
 MAX_IMG=2
-IDCAM=2
+IDCAM=0
 NUM_LADOS=4
 
 class Webcam:
@@ -32,8 +32,6 @@ class Webcam:
         blue_image[:] = (255,0,0)
         for i in range(MAX_IMG):
             self.cv_video.append(blue_image)
-        
-        #TODO asignar el minimo del canny mas alto para que no haya tanto ruido
         
         #Establecemos los rangos de las sliders
         self.MainWindow.canny_slide.setRange(30,150)
@@ -92,8 +90,21 @@ class Webcam:
                 #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
                 if max_cos < 0.2:
                     squares.append(cnt)
-        cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
+        #cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
+        self.isSquare(squares)
 
+    def isSquare(self, squares):
+        var = 0.1
+        for cnt in squares:
+            d1 = np.abs(cnt[0] - cnt[1])
+            d2 = np.abs(cnt[1] - cnt[2])
+            d3 = np.abs(cnt[2] - cnt[3])
+            d4 = np.abs(cnt[3] - cnt[0])
+            if a.all(np.abs(d1-d2) < var) and (np.abs(d2-d3) < var) and (np.abs(d3-d4) < var) and (np.abs(d1-d4) < var):
+                cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
+            else:
+                cv2.drawContours( self.cv_video[1], squares, -1, (0, 0, 255), 4 )
+        
     def angle_cos(self, p0, p1, p2):
         d1, d2 = (p0-p1).astype('float'), (p2-p1).astype('float')
         return abs( np.dot(d1, d2) / (np.sqrt(np.dot(d1,d1)) * np.sqrt(np.dot(d2,d2))))

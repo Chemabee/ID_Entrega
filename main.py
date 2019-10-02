@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication
 #from PyQt4 import QtCore, QtGui, uic
 import cv2
 import numpy as np
-
+import math
 
 MAX_IMG=2
 IDCAM=0
@@ -94,25 +94,15 @@ class Webcam:
         self.isSquare(squares)
 
     def isSquare(self, squares):
-        var = 5
-        for cnt in squares:
-            #TODO Hacerlo mas pythioniano
-            #d1 = abs(cnt[0] - cnt[1])
-            #d2 = abs(cnt[1] - cnt[2])
-            #d3 = abs(cnt[2] - cnt[3])
-            #d4 = abs(cnt[3] - cnt[0])
-            p1 = cnt[0]
-            p2 = cnt[1]
-            p3 = cnt[2]
-            d1 = abs(abs(p1[0] - p2[0]) - abs(p1[1] - p2[1]))
-            d2 = abs(abs(p2[0] - p3[0]) - abs(p2[1] - p3[1]))
-            #lat_aprox = cv2.arcLength(cnt, True)/4
-            #if((abs(d1-d2) < lat_aprox*var) and (abs(d2-d3) < lat_aprox*var) and (abs(d3-d4) < lat_aprox*var) and (abs(d1-d4) < lat_aprox*var)):
-            if(abs(d1-d2) < var):
-                cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
-            else:
-                cv2.drawContours( self.cv_video[1], squares, -1, (0, 0, 255), 4 )
+        minVar = 0.90
+        maxVar = 1.1
+        dist = lambda p1, p2: math.sqrt( abs((p1[0]-p2[0])**2)+abs((p1[1]-p2[1])**2) )
+        cuadrados=[cnt for cnt in squares if (minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar)]
+        rectangulos=[cnt for cnt in squares if cnt not in cuadrados]
+        cv2.drawContours( self.cv_video[1], cuadrados, -1, (0, 255, 0), 4 )
+        cv2.drawContours( self.cv_video[1], rectangulos, -1, (0, 0, 255), 4 )
         
+
     def angle_cos(self, p0, p1, p2):
         d1, d2 = (p0-p1).astype('float'), (p2-p1).astype('float')
         return abs( np.dot(d1, d2) / (np.sqrt(np.dot(d1,d1)) * np.sqrt(np.dot(d2,d2))))

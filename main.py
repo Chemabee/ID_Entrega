@@ -97,11 +97,16 @@ class Webcam:
         minVar = 0.90
         maxVar = 1.1
         dist = lambda p1, p2: math.sqrt( abs((p1[0]-p2[0])**2)+abs((p1[1]-p2[1])**2) )
-        cuadrados=[cnt for cnt in squares if (minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar)]
-        #rectangulos=[cnt for cnt in squares if cnt not in cuadrados]
+        #cuadrados=[cnt for cnt in squares if (minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar)]
+        #rectangulos=[cnt for cnt in squares if (minVar >= dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) >= maxVar)]
+        cuadrados, rectangulos = [], []
+        for cnt in squares:
+            if minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar:
+                cuadrados.append(cnt)
+            else:
+                rectangulos.append(cnt)
         cv2.drawContours( self.cv_video[1], cuadrados, -1, (0, 255, 0), 4 )
-        #cv2.drawContours( self.cv_video[1], rectangulos, -1, (0, 0, 255), 4 )
-        
+        cv2.drawContours( self.cv_video[1], rectangulos, -1, (0, 0, 255), 4 )
 
     def angle_cos(self, p0, p1, p2):
         d1, d2 = (p0-p1).astype('float'), (p2-p1).astype('float')

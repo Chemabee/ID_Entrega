@@ -1,48 +1,10 @@
 import re
-import OpenGL as gl
-import math as m
 
-from point_face import Point3D, Face
+from graphics.units import Point3D, Face
 
 
-
-
-class Modelo:  
-    alpha=None
-    beta=None
-
-    ListaPuntos3D=[]
-    ListaCaras=[]
-
-    numCaras=None
-    NumVertices=None
-
-    def __init__(self, ncaras=None, nvertices=None):
-        self.NumCaras = ncaras
-        self.NumVertices = nvertices
-        self.inicializarParametros()
-
-
-    def setVector4(self,v, v0, v1, v2, v3):
-        v[0]=v0
-        v[1]=v1
-        v[2]=v2
-        v[3]=v3
-
-    def inicializarParametros(self):
-        self.alpha=0
-        self.beta=0
-
-    def getNCaras(self):
-        return self.numCaras
-
-    def setNCaras(self, val):
-        self.numCaras = val
-    def getNVertices(self):
-        return self.numVertices
-
-    def setNVertices(self, val):
-        self.numVertices = val
+class AscLoader:
+    """Loads asc 3D models"""
 
     @staticmethod
     def load(path: str):
@@ -114,15 +76,3 @@ class Modelo:
                         faces.append(Face(a, b, c, normal))
 
         return name, vertices, faces
-
-    def Draw_Model(self, iForma, scale_from_editor, zoom):
-        for face in self.ListaCaras:
-            gl.glBegin(gl.GL_LINES)
-
-            gl.glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-            gl.glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-            gl.glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
-
-            gl.glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-
-            gl.glEnd()

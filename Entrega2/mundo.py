@@ -4,9 +4,9 @@ import OpenGL as gl
 class Mundo:
 
     #Distintas opciones del menu.
-    opcionesMenu={FONDO_1, FONDO_2, FONDO_3, FONDO_4,
-				DIBUJO_1, DIBUJO_2, DIBUJO_3, DIBUJO_4,
-				FORMA_1, FORMA_2, FORMA_3, FORMA_4}
+    opcionesMenu=["FONDO_1", "FONDO_2", "FONDO_3", "FONDO_4",
+				"DIBUJO_1", "DIBUJO_2", "DIBUJO_3", "DIBUJO_4",
+				"FORMA_1", "FORMA_2", "FORMA_3", "FORMA_4"]
 
     #Número de vistas diferentes.
     numCamaras=3
@@ -19,42 +19,20 @@ class Mundo:
 		{ 0.12, 0.50, 0.26}, # 4 - verde claro
 		{ 0.20, 0.14, 0.66}} # 5 - azul claro
 
-    #Variables de la clase
-    width=0
-    height=0
-    aspect=0.0
-    angulo=0.0
-    window=0
-
-    #Tamaño de los ejes y del alejamiento de Z.
-    tamanio=0
-    z0=0
-
-    #Factor para el tamaño del modelo.
-    escalaGeneral=0.0
-
-	#Rotacion de los modelos.
-    alpha=0.0
-    beta=0.0
-
-	#Variables para la gestion del ratón.
-    xold=0
-    yold=0
-    zoom=0.0
-
-    #Vistas del Sistema Planetario.
-    modelo.tipoVista iForma
-    iFondo=0
-    iDibujo=0
-
     def __init__(self):
         #Inicializamos todo:
 
+        #Variables de la clase
         width=800
         height=800
         aspect = width/height
         angulo = 0
         window=0
+        Sol=modelo()
+
+        #Tamaño de los ejes y del alejamiento de Z.
+        tamanio=0
+        z0=0
 
         #Factor para el tamaño del modelo.
         escalaGeneral = 0.005
@@ -68,6 +46,8 @@ class Mundo:
         yold=0
         zoom=1.0
 
+        #Vistas del Sistema Planetario.
+        #modelo.tipoVista iForma
         iDibujo=4
         iFondo=0
 
@@ -151,93 +131,53 @@ class Mundo:
         gl.glutPostRedisplay()
 
     #Funcion que gestiona las pulsaciones en el teclado.
-    void Mundo::keyPressed(unsigned char key, int x, int y) {
-        switch (key) {
-            // Tecla Esc.
-            case 27:	
-                // Cerramos la ventana y salimos.
-                glutDestroyWindow(window);
-                exit(0);
-                break;
-            }               
-    /*
-            // Tecla espacio	
-            case 32:	
-                
-                break;
+    def keyPressed(self, key, x, y):
+        if(key == 27):  #Tecla Esc
+            #Cerramos la ventana y salimos
+            gl.glutDestroyWindow(window)
+            exit(self, 0)
 
-            default:
-                // Numeros del 0 al 7
-                if(key>=48 && key<=55)	
-                            {};
-                break;
-        }
-        */
-    }
-
-
-    void Mundo::setVector4(GLfloat *v, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
-        v[0] = v0;
-        v[1] = v1;
-        v[2] = v2;
-        v[3] = v3;
-    }
-
+    def setVector4(self, v, v0, v1, v2, v3):
+        v[0] = v0
+        v[1] = v1
+        v[2] = v2
+        v[3] = v3
+  
     #Funcion para activar las distintas opciones que permite el menu.
-    void Mundo::onMenu(int opcion) {
-    switch (opcion) {
-        case FONDO_1:
-            setIFondo(0);
-            break;
-        case FONDO_2:
-            setIFondo(1);
-            break;
-        case FONDO_3:
-            setIFondo(2);
-            break;
-        case DIBUJO_1:
-            setIDibujo(3);
-            break;
-        case DIBUJO_2:
-            setIDibujo(4);
-            break;
-        case DIBUJO_3:
-            setIDibujo(5);
-            break;
-        }
-        glutPostRedisplay();
-    }
+    def onMenu(self, opcion):
+        if(opcion == self.opcionesMenu[0]):
+            setIFondo(self, 0)
+        elif(opcion == self.opcionesMenu[1]):
+            setIFondo(self, 1)
+        elif(opcion == self.opcionesMenu[2]):
+            setIFondo(self, 2)
+        elif(opcion == self.opcionesMenu[4]):
+            setIDibujo(self, 3)
+        elif(opcion == self.opcionesMenu[5]):
+            setIDibujo(self, 4)
+        elif(opcion == self.opcionesMenu[6]):
+            setIDibujo(self, 5)
+        gl.glutPostRedisplay()
+        
 
 
-    void Mundo::cargarModelo(char *nombre){ 
-        Sol.Load_Model(nombre);
-    }
+    def cargarModelo(self, nombre):
+        Sol.Load_Model(nombre)
 
+    def getWidth(self):
+        return width
 
-    int Mundo::getWidth() {
-        return width;
-    }
+    def getHeight(self):
+        return height
 
+    def setIFondo(self, iFondo):
+        self.iFondo = iFondo
 
-    int Mundo::getHeight() {
-        return height;
-    }
+    def getIFondo(self):
+        return iFondo
 
-    void Mundo::setIFondo(int iFondo) {
-        this->iFondo = iFondo;
-    }
+    def setIDibujo(self, iDibujo):
+        self.iDibujo = iDibujo
 
-
-    int Mundo::getIFondo() {
-        return iFondo;
-    }
-
-
-    void Mundo::setIDibujo(int iDibujo) {
-        this->iDibujo = iDibujo;
-    }
-
-
-    int Mundo::getIDibujo() {
-        return iDibujo;
-    }
+    def getIDibujo(self):
+        return iDibujo

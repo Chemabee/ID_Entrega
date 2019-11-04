@@ -12,12 +12,8 @@ class Mundo:
     numCamaras=3
 
     #Definimos los distintos colores que usaremos para visualizar nuestro Sistema Planetario.
-    colores={{0.00, 0.00, 0.00}, # 0 - negro
-		{ 0.06, 0.25, 0.13}, # 1 - verde oscuro
-		{ 0.10, 0.07, 0.33}, # 2 - azul oscuro
-		{ 1.00, 1.00, 1.00}, # 3 - blanco
-		{ 0.12, 0.50, 0.26}, # 4 - verde claro
-		{ 0.20, 0.14, 0.66}} # 5 - azul claro
+    #Negro, Verde oscuro, Azul oscuro, Blanco, Verde claro, Azul claro
+    colores=[{0.00, 0.00, 0.00}, { 0.06, 0.25, 0.13}, { 0.10, 0.07, 0.33}, { 1.00, 1.00, 1.00}, { 0.12, 0.50, 0.26}, { 0.20, 0.14, 0.66}]
 
     def __init__(self):
         #Inicializamos todo:
@@ -100,7 +96,7 @@ class Mundo:
         gl.glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
-        drawModel(Sol,escalaGeneral)
+        drawModel(self.Sol,self.escalaGeneral)
 
         gl.glFlush()
         gl.glutSwapBuffers()
@@ -134,7 +130,7 @@ class Mundo:
     def keyPressed(self, key, x, y):
         if(key == 27):  #Tecla Esc
             #Cerramos la ventana y salimos
-            gl.glutDestroyWindow(window)
+            gl.glutDestroyWindow(self.window)
             exit(self, 0)
 
     def setVector4(self, v, v0, v1, v2, v3):
@@ -162,22 +158,22 @@ class Mundo:
 
 
     def cargarModelo(self, nombre):
-        Sol.Load_Model(nombre)
+        self.Sol.Load_Model(nombre)
 
     def getWidth(self):
-        return width
+        return self.width
 
     def getHeight(self):
-        return height
+        return self.height
 
     def setIFondo(self, iFondo):
         self.iFondo = iFondo
 
     def getIFondo(self):
-        return iFondo
+        return self.iFondo
 
     def setIDibujo(self, iDibujo):
         self.iDibujo = iDibujo
 
     def getIDibujo(self):
-        return iDibujo
+        return self.iDibujo

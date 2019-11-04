@@ -77,7 +77,7 @@ class Mundo:
 
     def drawModel(self,forma, escala):
         glDisable(GL_LIGHTING)
-        forma.Draw_Model(forma, escala,self.zoom)
+        forma.Draw_Model(forma, escala, self.zoom)
         glEnable(GL_LIGHTING)
 
     def display(self):

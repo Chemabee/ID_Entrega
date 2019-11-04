@@ -70,8 +70,11 @@ class Main:
         #Gestion de los movimientos del raton	
         glutMotionFunc(self.onMotion)	
         #Dibujo e Idle
+        print("hola")
         glutDisplayFunc(self.display())
+        print("hola")
         glutIdleFunc(self.display())
+        print("hola")
         #Menús
         self.creacionMenu()
         #Pulsaciones del teclado

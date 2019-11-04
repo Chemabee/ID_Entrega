@@ -1,5 +1,7 @@
-from modelo import Modelo as m
-import OpenGL as gl
+from modelo import Modelo as model
+from OpenGL.GLUT import * 
+from OpenGL.GLU import *
+from OpenGL.GL import *
 
 class Mundo:
 
@@ -24,7 +26,7 @@ class Mundo:
         self.aspect = self.width/self.height
         self.angulo = 0
         self.window=0
-        self.Sol=m
+        self.Sol=model
 
         #Tamaño de los ejes y del alejamiento de Z.
         self.tamanio=0
@@ -49,63 +51,63 @@ class Mundo:
 
     def drawAxis(self):
         #Inicializamos
-        gl.glDisable(gl.GL_LIGHTING)
-        gl.glBegin(gl.GL_LINES)
-        gl.glClearColor(0.0, 0.0, 0.0, 0.0)
+        glDisable(GL_LIGHTING)
+        glBegin(GL_LINES)
+        glClearColor(0.0, 0.0, 0.0, 0.0)
 	
         #Eje X Rojo
-        gl.glColor3f(1.0, 0.0, 0.0)
-        gl.glVertex3f(0.0, 0.0, 0.0)
-        gl.glVertex3f(self.tamanio, 0.0, 0.0)
+        glColor3f(1.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(self.tamanio, 0.0, 0.0)
 
         #Eje Y Verde
-        gl.glColor3f(0.0, 1.0, 0.0)
-        gl.glVertex3f(0.0, 0.0, 0.0)
-        gl.glVertex3f(0.0, self.tamanio, 0.0)
+        glColor3f(0.0, 1.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, self.tamanio, 0.0)
 
         #Eje Z Azul
-        gl.glColor3f(0.0, 0.0, 1.0)
-        gl.glVertex3f(0.0, 0.0, 0.0)
-        gl.glVertex3f(0.0, 0.0, self.tamanio)
+        glColor3f(0.0, 0.0, 1.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, self.tamanio)
 
-        gl.glClearColor(0.0, 0.0, 0.0, 0.0)
+        glClearColor(0.0, 0.0, 0.0, 0.0)
 
-        gl.glEnd()
-        gl.glEnable(gl.GL_LIGHTING)
+        glEnd()
+        glEnable(GL_LIGHTING)
 
     def drawModel(self, escala):
-        gl.glDisable(gl.GL_LIGHTING)
-        m.Draw_Model(m.wired,escala,self.zoom)
-        gl.glEnable(gl.GL_LIGHTING)
+        glDisable(GL_LIGHTING)
+        model.Draw_Model(modelo.wired,escala,self.zoom)
+        glEnable(GL_LIGHTING)
 
     def display(self):
-        gl.glClearDepth(1.0)
-        gl.glClearColor(colores[self.getIFondo()][0], colores[self.getIFondo()][1], colores[self.getIFondo()][2], 1.0)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+        glClearDepth(1.0)
+        glClearColor(self.colores[self.getIFondo()][0], self.colores[self.getIFondo()][1], self.colores[self.getIFondo()][2], 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        gl.glMatrixMode(gl.GL_PROJECTION)
-        gl.glLoadIdentity()
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
 
-        gl.glMatrixMode(gl.GL_MODELVIEW)
-        gl.glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
 
-        gl.glRotatef(self.alpha, 1.0, 0.0, 0.0)
-        gl.glRotatef(self.beta, 0.0, 1.0, 0.0)
+        glRotatef(self.alpha, 1.0, 0.0, 0.0)
+        glRotatef(self.beta, 0.0, 1.0, 0.0)
 
         #Establecemos el color del Modelo.
-        gl.glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], colores[self.getIDibujo()][2])
+        glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], self.colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
-        m.Draw_Model(self.Sol,self.escalaGeneral)
+        model.Draw_Model(self.Sol,self.escalaGeneral, self.zoom)
 
-        gl.glFlush()
-        gl.glutSwapBuffers()
+        glFlush()
+        glutSwapBuffers()
 
         
     #Funcion para gestionar los movimientos del raton.
     def onMouse(self, button, state, x, y):
         if (button == 3) or (button == 4):
-            if (state == gl.GLUT_UP):
+            if (state == GLUT_UP):
                 pass
             if(button==3):
                 self.zoom=self.zoom-0.1
@@ -130,7 +132,7 @@ class Mundo:
     def keyPressed(self, key, x, y):
         if(key == 27):  #Tecla Esc
             #Cerramos la ventana y salimos
-            gl.glutDestroyWindow(self.window)
+            glutDestroyWindow(self.window)
             exit(self, 0)
 
     def setVector4(self, v, v0, v1, v2, v3):
@@ -142,17 +144,17 @@ class Mundo:
     #Funcion para activar las distintas opciones que permite el menu.
     def onMenu(self, opcion):
         if(opcion == self.opcionesMenu[0]):
-            setIFondo(self, 0)
+            self.setIFondo(0)
         elif(opcion == self.opcionesMenu[1]):
-            setIFondo(self, 1)
+            self.setIFondo(1)
         elif(opcion == self.opcionesMenu[2]):
-            setIFondo(self, 2)
+            self.setIFondo(2)
         elif(opcion == self.opcionesMenu[4]):
-            setIDibujo(self, 3)
+            self.setIDibujo(3)
         elif(opcion == self.opcionesMenu[5]):
-            setIDibujo(self, 4)
+            self.setIDibujo(4)
         elif(opcion == self.opcionesMenu[6]):
-            setIDibujo(self, 5)
+            self.setIDibujo(5)
         gl.glutPostRedisplay()
         
 

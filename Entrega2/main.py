@@ -11,17 +11,17 @@ class Main:
 
     #Funcion que crea las distintas opciones que se pueden activar en los menus.
     def creacionMenu(self):
-        menuFondo = gl.glutCreateMenu(onMenu)
+        menuFondo = gl.glutCreateMenu(self.onMenu)
         gl.glutAddMenuEntry("Negro", self.mundo.opcionesMenu[0])
         gl.glutAddMenuEntry("Verde oscuro", self.mundo.opcionesMenu[1])
         gl.glutAddMenuEntry("Azul oscuro", self.mundo.opcionesMenu[2])
 
-        menuDibujo = gl.glutCreateMenu(onMenu)
+        menuDibujo = gl.glutCreateMenu(self.onMenu)
         gl.glutAddMenuEntry("Blanco", self.mundo.opcionesMenu[4])
         gl.glutAddMenuEntry("Verde claro", self.mundo.opcionesMenu[5])
         gl.glutAddMenuEntry("Azul claro", self.mundo.opcionesMenu[6])
 
-        menuPrincipal = gl.glutCreateMenu(onMenu)
+        menuPrincipal = gl.glutCreateMenu(self.onMenu)
         gl.glutAddSubMenu("Color de fondo", menuFondo)
         gl.glutAddSubMenu("Color del dibujo", menuDibujo)
         #Carga el menú con el boton derecho.
@@ -60,12 +60,12 @@ class Main:
         gl.glutInit(argc, argv)
 
         #Declaraciones Globales
-        gl.InitGL()
+        self.InitGL()
 
         #Gestion de los botones del raton
-        gl.glutMouseFunc(self.onMouse())
+        gl.glutMouseFunc(self.onMouse)
         #Gestion de los movimientos del raton	
-        gl.glutMotionFunc(self.onMotion())	
+        gl.glutMotionFunc(self.onMotion)	
         #Dibujo e Idle
         gl.glutDisplayFunc(self.display())
         gl.glutIdleFunc(self.display())

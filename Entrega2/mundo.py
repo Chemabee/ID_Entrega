@@ -1,4 +1,4 @@
-import modelo
+from modelo import Modelo as m
 import OpenGL as gl
 
 class Mundo:
@@ -19,33 +19,33 @@ class Mundo:
         #Inicializamos todo:
 
         #Variables de la clase
-        width=800
-        height=800
-        aspect = width/height
-        angulo = 0
-        window=0
-        Sol=modelo()
+        self.width=800
+        self.height=800
+        self.aspect = self.width/self.height
+        self.angulo = 0
+        self.window=0
+        self.Sol=m
 
         #Tamaño de los ejes y del alejamiento de Z.
-        tamanio=0
-        z0=0
+        self.tamanio=0
+        self.z0=0
 
         #Factor para el tamaño del modelo.
-        escalaGeneral = 0.005
+        self.escalaGeneral = 0.005
 
         #Rotacion de los modelos.
-        alpha=0
-        beta=0
+        self.alpha=0
+        self.beta=0
 
         #Variables para la gestion del ratón.
-        xold=0
-        yold=0
-        zoom=1.0
+        self.xold=0
+        self.yold=0
+        self.zoom=1.0
 
         #Vistas del Sistema Planetario.
         #modelo.tipoVista iForma
-        iDibujo=4
-        iFondo=0
+        self.iDibujo=4
+        self.iFondo=0
 
     def drawAxis(self):
         #Inicializamos
@@ -75,7 +75,7 @@ class Mundo:
 
     def drawModel(self, escala):
         gl.glDisable(gl.GL_LIGHTING)
-        modelo.Draw_Model(modelo.wired,escala,self.zoom)
+        m.Draw_Model(m.wired,escala,self.zoom)
         gl.glEnable(gl.GL_LIGHTING)
 
     def display(self):
@@ -96,7 +96,7 @@ class Mundo:
         gl.glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
-        drawModel(self.Sol,self.escalaGeneral)
+        m.Draw_Model(self.Sol,self.escalaGeneral)
 
         gl.glFlush()
         gl.glutSwapBuffers()
@@ -109,10 +109,10 @@ class Mundo:
                 pass
             if(button==3):
                 self.zoom=self.zoom-0.1
-                print("Zoom negativo...." + zoom)
+                print("Zoom negativo...." + self.zoom)
             else:
                 self.zoom=self.zoom+0.1
-                print("Zoom positivo...." + zoom)
+                print("Zoom positivo...." + self.zoom)
         else:
             #Actualizamos los valores de x, y.
             self.xold = x
@@ -158,7 +158,7 @@ class Mundo:
 
 
     def cargarModelo(self, nombre):
-        self.Sol.Load_Model(nombre)
+        self.Sol.load(nombre)
 
     def getWidth(self):
         return self.width

@@ -15,25 +15,25 @@ class Cara:
         self.normal=normal
 
     def getA(self):
-        return a
+        return self.a
     
     def setA(self,a):
         self.a=a
 
     def getB(self):
-        return b
+        return self.b
     
     def setB(self,b):
         self.b=b
 
     def getC(self):
-        return c
+        return self.c
     
     def setC(self,c):
         self.c=c
 
     def getNormal(self):
-        return normal
+        return self.normal
     
     def setNormal(self,normal):
         self.normal=normal

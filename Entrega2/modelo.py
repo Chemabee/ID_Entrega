@@ -81,7 +81,7 @@ class Modelo:
                         _, y = regex((str, float), 'Y:(\s*)(-?\d*\.?\d*)', line)
                         _, z = regex((str, float), 'Z:(\s*)(-?\d*\.?\d*)', line)
 
-                        vertices.append(point_face.Point3D(x, y, z))
+                        vertices.append(Point3D(x, y, z))
 
                 if line == 'Face list:':
                     for n in range(0, num_faces):
@@ -100,7 +100,7 @@ class Modelo:
                         by = vertices[b].y - vertices[c].y  # Y[B] - Y[C]
                         bz = vertices[b].z - vertices[c].z  # Z[B] - Z[C]
 
-                        normal = point_face.Point3D(
+                        normal = Point3D(
                             (ay * bz) - (az * by),
                             (az * bx) - (ax * bz),
                             (ax * by) - (ay * bx))
@@ -111,7 +111,7 @@ class Modelo:
                         normal.y /= l
                         normal.z /= l
 
-                        faces.append(point_face.Face(a, b, c, normal))
+                        faces.append(Face(a, b, c, normal))
 
         return name, vertices, faces
 

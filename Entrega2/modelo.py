@@ -47,6 +47,12 @@ class Modelo:
     def setNVertices(self, val):
         self.numVertices = val
 
+    def setVertices(self, val):
+        self.ListaPuntos3D = val
+    
+    def setCaras(self, val):
+        self.ListaCaras = val
+
     @staticmethod
     def load(path: str):
         """Loads a asc file as a 3D model
@@ -120,11 +126,49 @@ class Modelo:
 
     def Draw_Model(self, iForma, scale_from_editor, zoom):
         for face in self.ListaCaras:
-            glBegin(GL_LINES)
+            if(iForma == 6):    #Wired
+                glDisable(GL_LIGHTING)
+                glBegin(GL_LINES)
 
-            glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-            glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-            glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+
+            elif(iForma == 7):  #Solid
+                glDisable(GL_LIGHTING)
+                glBegin(GL_POLYGON)
+
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+
+            elif(iForma == 8):  #Flat
+                glShadeModel(GL_FLAT)
+                glBegin(GL_POLYGON)
+
+                glNormal3f(face.normal.x, face.normal.y, face.normal.z)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+
+            elif(iForma == 9):  #Smooth
+                glShadeModel(GL_SMOOTH)
+                glBegin(GL_POLYGON)
+
+                glNormal3f(self.ListaPuntos3D[face.a].x, self.ListaPuntos3D[face.a].y, self.ListaPuntos3D[face.a].z)
+                glVertex3f(self.ListaPuntos3D[face.a].x*scale_from_editor*zoom, self.ListaPuntos3D[face.a].y*scale_from_editor*zoom, self.ListaPuntos3D[face.a].z*scale_from_editor*zoom)
+                
+                glNormal3f(self.ListaPuntos3D[face.b].x, self.ListaPuntos3D[face.b].y, self.ListaPuntos3D[face.b].z)
+                glVertex3f(self.ListaPuntos3D[face.b].x*scale_from_editor*zoom, self.ListaPuntos3D[face.b].y*scale_from_editor*zoom, self.ListaPuntos3D[face.b].z*scale_from_editor*zoom)
+                
+                glNormal3f(self.ListaPuntos3D[face.c].x, self.ListaPuntos3D[face.c].y, self.ListaPuntos3D[face.c].z)
+                glVertex3f(self.ListaPuntos3D[face.c].x*scale_from_editor*zoom, self.ListaPuntos3D[face.c].y*scale_from_editor*zoom, self.ListaPuntos3D[face.c].z*scale_from_editor*zoom)
+
+                """
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                """
 
             glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
 

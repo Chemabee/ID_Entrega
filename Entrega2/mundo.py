@@ -5,10 +5,19 @@ from OpenGL.GL import *
 
 class Mundo:
 
-    #Distintas opciones del menu.
-    opcionesMenu=["FONDO_1", "FONDO_2", "FONDO_3", "FONDO_4",
-				"DIBUJO_1", "DIBUJO_2", "DIBUJO_3", "DIBUJO_4",
-				"FORMA_1", "FORMA_2", "FORMA_3", "FORMA_4"]
+    # Distintas opciones del menu.
+    opcionesMenu = {
+      "FONDO_1":0,
+      "FONDO_2":1,
+      "FONDO_3":2,
+      "DIBUJO_1":3,
+      "DIBUJO_2":4,
+      "DIBUJO_3":5,
+      "FORMA_1":6,
+      "FORMA_2":7,
+      "FORMA_3":8,
+      "FORMA_4":9
+    }
 
     #Número de vistas diferentes.
     numCamaras=3
@@ -46,8 +55,19 @@ class Mundo:
 
         #Vistas del Sistema Planetario.
         #modelo.tipoVista iForma
-        self.iDibujo=4
+        self.iDibujo=3
         self.iFondo=0
+        self.iForma=6
+        
+        self.material_difuso=[None, None, None, None]
+        self.material_ambiente=[None, None, None, None]
+        self.material_specular=[None, None, None, None]
+        self.material_emission=[None, None, None, None]
+        self.luzdifusa=[None, None, None, None]
+        self.luzambiente=[None, None, None, None]
+        self.luzspecular=[None, None, None, None]
+        self.posicion0=[None, None, None, None]
+        self.rotacion=[None, None, None, None]
 
     def drawAxis(self):
         #Inicializamos
@@ -76,9 +96,7 @@ class Mundo:
         glEnable(GL_LIGHTING)
 
     def drawModel(self,forma, escala):
-        glDisable(GL_LIGHTING)
-        forma.Draw_Model(forma, escala, self.zoom)
-        glEnable(GL_LIGHTING)
+        forma.Draw_Model(self.iForma, escala, self.zoom)
 
     def display(self):
         glClearDepth(1.0)
@@ -99,6 +117,18 @@ class Mundo:
             
         #Pintamos el modelo.
         self.drawModel(self.Sol,self.escalaGeneral)
+
+        brillo = 10
+        self.setVector4(self.luzdifusa, 1.0, 1.0, 1.0, 1.0)
+        self.setVector4(self.luzambiente, 0.50, 0.50, 0.50, 1.0)
+        self.setVector4(self.luzspecular, 0.20, 0.20, 0.20, 1.0)
+        self.setVector4(self.posicion0, 5.0, 5.0, 6.0, 0.0)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, self.luzdifusa)
+        glLightfv(GL_LIGHT0, GL_AMBIENT, self.luzambiente)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, self.luzspecular)
+        glLightfv(GL_LIGHT0, GL_POSITION, self.posicion0)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
 
         glFlush()
         glutSwapBuffers()
@@ -143,24 +173,37 @@ class Mundo:
   
     #Funcion para activar las distintas opciones que permite el menu.
     def onMenu(self, opcion):
-        if(opcion == self.opcionesMenu[0]):
+        if(opcion == self.opcionesMenu["FONDO_1"]):
             self.setIFondo(0)
-        elif(opcion == self.opcionesMenu[1]):
+        elif(opcion == self.opcionesMenu["FONDO_2"]):
             self.setIFondo(1)
-        elif(opcion == self.opcionesMenu[2]):
+        elif(opcion == self.opcionesMenu["FONDO_3"]):
             self.setIFondo(2)
-        elif(opcion == self.opcionesMenu[4]):
+        elif(opcion == self.opcionesMenu["DIBUJO_1"]):
             self.setIDibujo(3)
-        elif(opcion == self.opcionesMenu[5]):
+        elif(opcion == self.opcionesMenu["DIBUJO_2"]):
             self.setIDibujo(4)
-        elif(opcion == self.opcionesMenu[6]):
+        elif(opcion == self.opcionesMenu["DIBUJO_3"]):
             self.setIDibujo(5)
+        elif(opcion == self.opcionesMenu["FORMA_1"]):
+            self.setIForma(6)
+        elif(opcion == self.opcionesMenu["FORMA_2"]):
+            self.setIForma(7)
+        elif(opcion == self.opcionesMenu["FORMA_3"]):
+            self.setIForma(8)
+        elif(opcion == self.opcionesMenu["FORMA_4"]):
+            self.setIForma(9)
         glutPostRedisplay()
+        return opcion
         
 
 
     def cargarModelo(self, nombre):
-        self.Sol.load(nombre)
+        _, vertices, caras = self.Sol.load(nombre)
+        self.Sol.setNVertices(len(vertices))
+        self.Sol.setNCaras(len(caras))
+        self.Sol.setCaras(caras)
+        self.Sol.setVertices(vertices)
 
     def getWidth(self):
         return self.width
@@ -179,3 +222,9 @@ class Mundo:
 
     def getIDibujo(self):
         return self.iDibujo
+    
+    def setIForma(self, iForma):
+        self.iForma = iForma
+
+    def getIForma(self):
+        return self.iForma

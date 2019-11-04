@@ -6,27 +6,33 @@ from OpenGL.GL import *
 
 class Main:
 
+    mundo = m.Mundo()
+
     def display(self):
         self.mundo.display()
 
-    def onMenu(self, opcion):
-        self.mundo.onMenu(opcion)
-
     #Funcion que crea las distintas opciones que se pueden activar en los menus.
     def creacionMenu(self):
-        menuFondo = glutCreateMenu(self.onMenu)
-        glutAddMenuEntry("Negro", self.mundo.opcionesMenu[0])
-        glutAddMenuEntry("Verde oscuro", self.mundo.opcionesMenu[1])
-        glutAddMenuEntry("Azul oscuro", self.mundo.opcionesMenu[2])
+        menuFondo = glutCreateMenu(self.mundo.onMenu)
+        glutAddMenuEntry("Negro", self.mundo.opcionesMenu["FONDO_1"])
+        glutAddMenuEntry("Verde oscuro", self.mundo.opcionesMenu["FONDO_2"])
+        glutAddMenuEntry("Azul oscuro", self.mundo.opcionesMenu["FONDO_3"])
 
-        menuDibujo = glutCreateMenu(self.onMenu)
-        glutAddMenuEntry("Blanco", self.mundo.opcionesMenu[4])
-        glutAddMenuEntry("Verde claro", self.mundo.opcionesMenu[5])
-        glutAddMenuEntry("Azul claro", self.mundo.opcionesMenu[6])
+        menuDibujo = glutCreateMenu(self.mundo.onMenu)
+        glutAddMenuEntry("Blanco", self.mundo.opcionesMenu["DIBUJO_1"])
+        glutAddMenuEntry("Verde claro", self.mundo.opcionesMenu["DIBUJO_2"])
+        glutAddMenuEntry("Azul claro", self.mundo.opcionesMenu["DIBUJO_3"])
 
-        menuPrincipal = glutCreateMenu(self.onMenu)
+        menuForma = glutCreateMenu(self.mundo.onMenu)
+        glutAddMenuEntry("Wired", self.mundo.opcionesMenu["FORMA_1"])
+        glutAddMenuEntry("Solid", self.mundo.opcionesMenu["FORMA_2"])
+        glutAddMenuEntry("Flat", self.mundo.opcionesMenu["FORMA_3"])
+        glutAddMenuEntry("Smooth", self.mundo.opcionesMenu["FORMA_4"])
+
+        menuPrincipal = glutCreateMenu(self.mundo.onMenu)
         glutAddSubMenu("Color de fondo", menuFondo)
         glutAddSubMenu("Color del dibujo", menuDibujo)
+        glutAddSubMenu("Forma", menuForma)
         #Carga el menú con el boton derecho.
         glutAttachMenu(GLUT_RIGHT_BUTTON)
 
@@ -56,25 +62,24 @@ class Main:
         glDepthFunc(GL_LESS)
 
     def main(self, argv):
-        self.mundo = m.Mundo()
 
         self.mundo.cargarModelo(argv)
         argc=1
-        glutInit(argc, argv)
+        glutInit(argv)
 
         #Declaraciones Globales
         self.InitGL()
 
         #Gestion de los botones del raton
         glutMouseFunc(self.onMouse)
+        
         #Gestion de los movimientos del raton	
         glutMotionFunc(self.onMotion)	
+        
         #Dibujo e Idle
-        print("hola")
-        glutDisplayFunc(self.display())
-        print("hola")
-        glutIdleFunc(self.display())
-        print("hola")
+        glutDisplayFunc(self.display)
+        glutIdleFunc(self.display)
+        
         #Menús
         self.creacionMenu()
         #Pulsaciones del teclado

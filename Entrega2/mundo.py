@@ -1,4 +1,4 @@
-from modelo import Modelo as model
+import modelo as model
 from OpenGL.GLUT import * 
 from OpenGL.GLU import *
 from OpenGL.GL import *
@@ -15,7 +15,7 @@ class Mundo:
 
     #Definimos los distintos colores que usaremos para visualizar nuestro Sistema Planetario.
     #Negro, Verde oscuro, Azul oscuro, Blanco, Verde claro, Azul claro
-    colores=[{0.00, 0.00, 0.00}, { 0.06, 0.25, 0.13}, { 0.10, 0.07, 0.33}, { 1.00, 1.00, 1.00}, { 0.12, 0.50, 0.26}, { 0.20, 0.14, 0.66}]
+    colores=[(0.00, 0.00, 0.00), (0.06, 0.25, 0.13), (0.10, 0.07, 0.33), (1.00, 1.00, 1.00), (0.12, 0.50, 0.26), (0.20, 0.14, 0.66)]
 
     def __init__(self):
         #Inicializamos todo:
@@ -26,7 +26,7 @@ class Mundo:
         self.aspect = self.width/self.height
         self.angulo = 0
         self.window=0
-        self.Sol=model
+        self.Sol=model.Modelo()
 
         #Tamaño de los ejes y del alejamiento de Z.
         self.tamanio=0
@@ -75,9 +75,9 @@ class Mundo:
         glEnd()
         glEnable(GL_LIGHTING)
 
-    def drawModel(self, escala):
+    def drawModel(self,forma, escala):
         glDisable(GL_LIGHTING)
-        model.Draw_Model(modelo.wired,escala,self.zoom)
+        forma.Draw_Model(forma, escala,self.zoom)
         glEnable(GL_LIGHTING)
 
     def display(self):
@@ -98,7 +98,7 @@ class Mundo:
         glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], self.colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
-        model.Draw_Model(self.Sol,self.escalaGeneral, self.zoom)
+        self.drawModel(self.Sol,self.escalaGeneral)
 
         glFlush()
         glutSwapBuffers()
@@ -126,7 +126,7 @@ class Mundo:
         self.beta = (self.beta + (x - self.xold))
         self.xold = x
         self.yold = y
-        gl.glutPostRedisplay()
+        glutPostRedisplay()
 
     #Funcion que gestiona las pulsaciones en el teclado.
     def keyPressed(self, key, x, y):
@@ -155,7 +155,7 @@ class Mundo:
             self.setIDibujo(4)
         elif(opcion == self.opcionesMenu[6]):
             self.setIDibujo(5)
-        gl.glutPostRedisplay()
+        glutPostRedisplay()
         
 
 

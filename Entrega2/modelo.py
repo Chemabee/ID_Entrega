@@ -2,6 +2,7 @@ import re
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
+from OpenGL import *
 import math as m
 
 from point_face import Point3D, Face

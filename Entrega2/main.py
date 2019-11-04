@@ -1,4 +1,5 @@
 import mundo as m
+import sys
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
@@ -54,11 +55,11 @@ class Main:
         glDepthMask(GL_TRUE)
         glDepthFunc(GL_LESS)
 
-    def main(self, argc, argv):
+    def main(self, argv):
         self.mundo = m.Mundo()
 
-        self.mundo.cargarModelo(argv[1])
-
+        self.mundo.cargarModelo(argv)
+        argc=1
         glutInit(argc, argv)
 
         #Declaraciones Globales
@@ -78,3 +79,7 @@ class Main:
             
         #Repeat.
         glutMainLoop()
+
+if __name__ == '__main__':
+    ma = Main()
+    ma.main(sys.argv[1])

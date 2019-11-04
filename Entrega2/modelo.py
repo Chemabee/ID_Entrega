@@ -1,5 +1,7 @@
 import re
-import OpenGL as gl
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL import *
 import math as m
 
 from point_face import Point3D, Face
@@ -117,12 +119,12 @@ class Modelo:
 
     def Draw_Model(self, iForma, scale_from_editor, zoom):
         for face in self.ListaCaras:
-            gl.glBegin(gl.GL_LINES)
+            glBegin(GL_LINES)
 
-            gl.glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-            gl.glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-            gl.glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+            glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+            glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
+            glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
 
-            gl.glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+            glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
 
-            gl.glEnd()
+            glEnd()

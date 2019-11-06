@@ -1,4 +1,5 @@
 import modelo as model
+import camera_frustum as cf
 from OpenGL.GLUT import * 
 from OpenGL.GLU import *
 from OpenGL.GL import *
@@ -106,8 +107,13 @@ class Mundo:
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
+        cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
+        cam.locateFrustum()
+
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
+
+        cam.locateCamera()
 
         glRotatef(self.alpha, 1.0, 0.0, 0.0)
         glRotatef(self.beta, 0.0, 1.0, 0.0)

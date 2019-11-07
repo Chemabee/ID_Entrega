@@ -43,7 +43,7 @@ class Main:
         self.mundo.onMouse(button, state, x, y)
 
     def keyPressed(self, key, x, y):
-        self.mundo.keyPressed(key, x, y)
+        self.mundo.keyPressed(key)
 
     def InitGL(self):
         #Activamos los buffers

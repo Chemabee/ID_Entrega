@@ -1,8 +1,10 @@
 import modelo as model
 import camera_frustum as cf
+import material
 from OpenGL.GLUT import * 
 from OpenGL.GLU import *
 from OpenGL.GL import *
+import random
 
 class Mundo:
 
@@ -60,15 +62,16 @@ class Mundo:
         self.iFondo=0
         self.iForma=6
         
-        self.material_difuso=[None, None, None, None]
-        self.material_ambiente=[None, None, None, None]
-        self.material_specular=[None, None, None, None]
-        self.material_emission=[None, None, None, None]
+        self.mat_ambient=[None, None, None, None]
+        self.mat_specular=[None, None, None, None]
+        self.mat_emission=[None, None, None, None]
         self.luzdifusa=[None, None, None, None]
         self.luzambiente=[None, None, None, None]
         self.luzspecular=[None, None, None, None]
         self.posicion0=[None, None, None, None]
         self.rotacion=[None, None, None, None]
+
+        self.randoms=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
     def drawAxis(self):
         #Inicializamos
@@ -136,6 +139,13 @@ class Mundo:
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
 
+        self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
+        self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])
+        self.setVector4(self.mat_emission,  self.randoms[8], self.randoms[9], self.randoms[10], self.randoms[11])
+
+        mat = material.Material(self.mat_ambient, self.mat_specular, self.mat_emission)
+        mat.putMaterial(brillo)
+
         glFlush()
         glutSwapBuffers()
 
@@ -147,10 +157,10 @@ class Mundo:
                 pass
             if(button==3):
                 self.zoom=self.zoom-0.1
-                print("Zoom negativo...." + self.zoom)
+                #print("Zoom negativo...." + self.zoom)
             else:
                 self.zoom=self.zoom+0.1
-                print("Zoom positivo...." + self.zoom)
+                #print("Zoom positivo...." + self.zoom)
         else:
             #Actualizamos los valores de x, y.
             self.xold = x
@@ -165,11 +175,14 @@ class Mundo:
         glutPostRedisplay()
 
     #Funcion que gestiona las pulsaciones en el teclado.
-    def keyPressed(self, key, x, y):
-        if(key == 27):  #Tecla Esc
+    def keyPressed(self, key):
+        if(key == chr(27).encode()):  #Tecla Esc
             #Cerramos la ventana y salimos
             glutDestroyWindow(self.window)
-            exit(self, 0)
+            exit()
+        elif(key == chr(114).encode() or key == chr(82).encode()):
+            for i in range(len(self.randoms)):
+                self.randoms[i]=random.random()
 
     def setVector4(self, v, v0, v1, v2, v3):
         v[0] = v0

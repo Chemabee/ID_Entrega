@@ -102,6 +102,11 @@ class Mundo:
     def drawModel(self,forma, escala):
         forma.Draw_Model(self.iForma, escala, self.zoom)
 
+    def loadTexture(self, image):
+        glGenTextures(1, textureId)
+        glBindTexture(GL_TEXTURE_2D, textureId)
+        #TODO Terminar
+
     def display(self):
         glClearDepth(1.0)
         glClearColor(self.colores[self.getIFondo()][0], self.colores[self.getIFondo()][1], self.colores[self.getIFondo()][2], 1.0)

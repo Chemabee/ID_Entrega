@@ -29,6 +29,10 @@ class Mundo:
     #Negro, Verde oscuro, Azul oscuro, Blanco, Verde claro, Azul claro
     colores=[(0.00, 0.00, 0.00), (0.06, 0.25, 0.13), (0.10, 0.07, 0.33), (1.00, 1.00, 1.00), (0.12, 0.50, 0.26), (0.20, 0.14, 0.66)]
 
+    #Numero de Astros
+    NUM_ASTROS = 1
+    astros=[]
+
     def __init__(self):
         #Inicializamos todo:
 
@@ -38,7 +42,11 @@ class Mundo:
         self.aspect = self.width/self.height
         self.angulo = 0
         self.window=0
-        self.Sol=model.Modelo()
+
+        #Astros
+        
+        for i in range(self.NUM_ASTROS):
+            self.astros.append(model.Modelo())
 
         #Tamaño de los ejes y del alejamiento de Z.
         self.tamanio=0
@@ -130,7 +138,8 @@ class Mundo:
         glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], self.colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
-        self.drawModel(self.Sol,self.escalaGeneral)
+        for cuerpo in self.astros:
+            self.drawModel(cuerpo,self.escalaGeneral)
 
         brillo = 10
         self.setVector4(self.luzdifusa, 1.0, 1.0, 1.0, 1.0)
@@ -221,13 +230,14 @@ class Mundo:
         return opcion
         
 
-
-    def cargarModelo(self, nombre):
-        _, vertices, caras = self.Sol.load(nombre)
-        self.Sol.setNVertices(len(vertices))
-        self.Sol.setNCaras(len(caras))
-        self.Sol.setCaras(caras)
-        self.Sol.setVertices(vertices)
+    #Aqui antes solo cargaba "Sol" ahora todos los modelos que queramos
+    def cargarModelo(self, modelo):
+        for cuerpo in self.astros:
+            _, vertices, caras = cuerpo.load(modelo)
+            cuerpo.setNVertices(len(vertices))
+            cuerpo.setNCaras(len(caras))
+            cuerpo.setCaras(caras)
+            cuerpo.setVertices(vertices)
 
     def getWidth(self):
         return self.width

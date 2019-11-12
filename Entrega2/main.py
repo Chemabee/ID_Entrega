@@ -1,5 +1,6 @@
 import mundo as m
 import sys
+import json_loader
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
@@ -62,10 +63,11 @@ class Main:
         glDepthFunc(GL_LESS)
 
     def main(self, argv):
-
-        self.mundo.cargarModelo(argv)
-        argc=1
-        glutInit(argv)
+        #argv[0] = main.py; argv[1]=modelo; argv[2] = json
+        data = json_loader.JsonLoader.load(argv[2])
+        print(data["focos"][1])
+        self.mundo.cargarModelo(argv[1])
+        glutInit(argv[1])
 
         #Declaraciones Globales
         self.InitGL()
@@ -90,4 +92,4 @@ class Main:
 
 if __name__ == '__main__':
     ma = Main()
-    ma.main(sys.argv[1])
+    ma.main(sys.argv)

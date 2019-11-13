@@ -15,6 +15,18 @@ class Foco:
         self.luzdifusa=luzdifusa
         self.luzambiente=luzambiente
         self.luzspecular=luzspecular
+        self.posicion=posicion
+        self.activo=True
+    
+    def getLuzDifusa(self):
+        return self.luzdifusa
+    def getLuzAmbiente(self):
+        return self.luzambiente
+    def getLuzSpecular(self):
+        return self.luzspecular
+    def getPosicion(self):
+        return self.posicion
+        
     def cambiarEstado(self):
         if self.activo:
             self.activo = False

@@ -5,6 +5,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 import random
+import foco
 
 class Mundo:
 
@@ -81,8 +82,9 @@ class Mundo:
         #**Cargamos Focos**
         self.focos = data["focos"]
         self.NUM_FOCOS=len(self.focos)
-        #for i in range (self.NUM_FOCOS):
-            #self.focosCargados.append()#TODO clase Foco con los parametros del JSON
+        for i in range (self.NUM_FOCOS):
+            self.focosCargados.append(foco.Foco(self.focos[i]["brillo"], self.focos[i]["luzdifusa"], self.focos[i]["luzambiente"], self.focos[i]["luzspecular"], self.focos[i]["posicion"]))
+            print("&Foco",i,"cargado desde JSON")
 
         #**Cargamos Materiales**
         self.materiales = data["materiales"]
@@ -198,24 +200,31 @@ class Mundo:
             glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
             self.drawModel(cuerpo,self.escalaGeneral)
 
-        #TODO añadir focos
-        brillo = 10
-        self.setVector4(self.luzdifusa, 1.0, 1.0, 1.0, 1.0)
-        self.setVector4(self.luzambiente, 0.50, 0.50, 0.50, 1.0)
-        self.setVector4(self.luzspecular, 0.20, 0.20, 0.20, 1.0)
-        self.setVector4(self.posicion0, 5.0, 5.0, 6.0, 0.0)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, self.luzdifusa)
-        glLightfv(GL_LIGHT0, GL_AMBIENT, self.luzambiente)
-        glLightfv(GL_LIGHT0, GL_SPECULAR, self.luzspecular)
-        glLightfv(GL_LIGHT0, GL_POSITION, self.posicion0)
+
+
+        for i in range (self.NUM_FOCOS):
+            self.setVector4(self.luzambiente, self.focosCargados[i].getLuzAmbiente()[0], self.focosCargados[i].getLuzAmbiente()[1], self.focosCargados[i].getLuzAmbiente()[2], self.focosCargados[i].getLuzAmbiente()[3])
+            self.setVector4(self.luzdifusa, self.focosCargados[i].getLuzDifusa()[0], self.focosCargados[i].getLuzDifusa()[1], self.focosCargados[i].getLuzDifusa()[2], self.focosCargados[i].getLuzDifusa()[3])
+            self.setVector4(self.luzspecular, self.focosCargados[i].getLuzSpecular()[0], self.focosCargados[i].getLuzSpecular()[1], self.focosCargados[i].getLuzSpecular()[2], self.focosCargados[i].getLuzSpecular()[3])
+            self.setVector4(self.posicion0, self.focosCargados[i].getPosicion()[0], self.focosCargados[i].getPosicion()[1], self.focosCargados[i].getPosicion()[2], self.focosCargados[i].getPosicion()[3])
+
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, self.luzdifusa)
+            glLightfv(GL_LIGHT0, GL_AMBIENT, self.luzambiente)
+            glLightfv(GL_LIGHT0, GL_SPECULAR, self.luzspecular)
+            glLightfv(GL_LIGHT0, GL_POSITION, self.posicion0)
+            break
+        #TODO corregir arriba y abajo
         glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
+        for i in range (self.NUM_FOCOS):
+            glEnable(GL_LIGHT0)
+            break
 
         self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
         self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])
         self.setVector4(self.mat_emission,  self.randoms[8], self.randoms[9], self.randoms[10], self.randoms[11])
 
         #TODO Meter materiales
+        brillo=10
         mat = material.Material(self.mat_ambient, self.mat_specular, self.mat_emission)
         mat.putMaterial(brillo)
 

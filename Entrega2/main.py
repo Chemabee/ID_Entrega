@@ -7,7 +7,7 @@ from OpenGL.GL import *
 
 class Main:
 
-    mundo = m.Mundo()
+    mundo = None
 
     def display(self):
         self.mundo.display()
@@ -62,10 +62,18 @@ class Main:
         glDepthMask(GL_TRUE)
         glDepthFunc(GL_LESS)
 
+
+    def getData(self, dato=None):
+        if dato != None:
+            return self.data[dato]
+        else:
+            return self.data
+
     def main(self, argv):
         #argv[0] = main.py; argv[1]=modelo; argv[2] = json
-        data = json_loader.JsonLoader.load(argv[2])
-        print(data["focos"][1])
+        self.data = json_loader.JsonLoader.load(argv[2])
+        self.mundo = m.Mundo(self.data)
+
         self.mundo.cargarModelo(argv[1])
         glutInit(argv[1])
 

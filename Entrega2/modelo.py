@@ -20,11 +20,16 @@ class Modelo:
     numCaras=None
     NumVertices=None
 
-    def __init__(self, ncaras=None, nvertices=None):
+    def __init__(self, data, ncaras=None, nvertices=None):
+        self.radio = data["radio"] #Se refiere a radio con respecto al centro que es el sol y tiene radio = 0
+        self.wRotAstro = data["wRotAstro"]
+        self.wRotProp = data["wRotProp"]
+        self.tamanio = data["tamanio"]
+        self.nombre = data["nombre"]
+        self.l = data["l"]
         self.NumCaras = ncaras
         self.NumVertices = nvertices
         self.inicializarParametros()
-
 
     def setVector4(self,v, v0, v1, v2, v3):
         v[0]=v0
@@ -113,7 +118,6 @@ class Modelo:
                             (ay * bz) - (az * by),
                             (az * bx) - (ax * bz),
                             (ax * by) - (ay * bx))
-
                         l = ((normal.x ** 2) + (normal.y ** 2) + (normal.z ** 2)) ** (1 / 2)
 
                         normal.x /= l
@@ -125,6 +129,7 @@ class Modelo:
         return name, vertices, faces
 
     def Draw_Model(self, iForma, scale_from_editor, zoom):
+        zoom = zoom * self.tamanio
         for face in self.ListaCaras:
             if(iForma == 6):    #Wired
                 glDisable(GL_LIGHTING)
@@ -171,5 +176,5 @@ class Modelo:
                 """
 
             glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-
+            #TODO no sé cómo pintar este objeto en un punto concreto... Quizá solo haya que alejarlo del origen en RADIO unidades
             glEnd()

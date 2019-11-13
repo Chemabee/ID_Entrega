@@ -21,19 +21,32 @@ class Mundo:
       "FORMA_3":8,
       "FORMA_4":9
     }
-
-    #Número de vistas diferentes.
-    numCamaras=3
-
     #Definimos los distintos colores que usaremos para visualizar nuestro Sistema Planetario.
     #Negro, Verde oscuro, Azul oscuro, Blanco, Verde claro, Azul claro
     colores=[(0.00, 0.00, 0.00), (0.06, 0.25, 0.13), (0.10, 0.07, 0.33), (1.00, 1.00, 1.00), (0.12, 0.50, 0.26), (0.20, 0.14, 0.66)]
 
-    #Numero de Astros
-    NUM_ASTROS = 1
-    astros=[]
+    #Cámaras diferentes.
+    NUM_CAMARAS=None
+    camaras=None
+    camarasCargadas=[]
 
-    def __init__(self):
+    #Astros diferentes
+    planetas=None
+    astros=[]
+    NUM_ASTROS=None
+
+    #Focos diferentes
+    NUM_FOCOS=None
+    focos=None
+    focosCargados=[]
+
+    #Materiales diferentes
+    NUM_MATERIALES=None
+    materiales=None
+    materialesCargados=[]
+
+
+    def __init__(self, data =None):
         #Inicializamos todo:
 
         #Variables de la clase
@@ -43,10 +56,36 @@ class Mundo:
         self.angulo = 0
         self.window=0
 
-        #Astros
-        
+        #**Cargar Astros**
+        self.planetas = data["planetas"]
+        self.NUM_ASTROS = len(self.planetas)
+            #Aqui cargamos los datos en modelos y los guardamos en una lista llamada astros
         for i in range(self.NUM_ASTROS):
-            self.astros.append(model.Modelo())
+            self.astros.append(model.Modelo(self.planetas[i]))
+            print("&Planeta",i,"cargado desde JSON")
+
+        #**Cargar Camaras**
+        self.camaras = data["camaras"]
+        self.numCamaras = len(self.camaras)
+            #Cargamos las camaras de data en objetos Camara_Frustum
+        for i in range (self.numCamaras):
+            self.camarasCargadas.append(cf.Camera_Frustum(self.camaras[i]["ejex"], self.camaras[i]["ejey"], self.camaras[i]["ejez"], 
+            self.camaras[i]["centrox"], self.camaras[i]["centroy"], self.camaras[i]["centroz"],
+            self.camaras[i]["upx"], self.camaras[i]["upy"], self.camaras[i]["upz"]))
+            print("&Camara",i,"cargada desde JSON")
+
+        #**Cargamos Focos**
+        self.focos = data["focos"]
+        self.NUM_FOCOS=len(self.focos)
+        #for i in range (self.NUM_FOCOS):
+            #self.focosCargados.append()#TODO clase Foco con los parametros del JSON
+
+        #**Cargamos Materiales**
+        self.materiales = data["materiales"]
+        self.NUM_MATERIALES = len(self.materiales)
+        for i in range (self.NUM_MATERIALES):
+            self.materialesCargados.append(material.Material(self.materiales[i]["luzambiente"], self.materiales[i]["luzspecular"], self.materiales[i]["luzdifusa"], self.materiales[i]["brillo"]))
+            print("&Material",i,"cargado desde JSON")
 
         #Tamaño de los ejes y del alejamiento de Z.
         self.tamanio=0
@@ -123,6 +162,7 @@ class Mundo:
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
+        #TODO Adaptar a más camaras
         cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
         cam.locateFrustum()
 
@@ -141,6 +181,7 @@ class Mundo:
         for cuerpo in self.astros:
             self.drawModel(cuerpo,self.escalaGeneral)
 
+        #TODO añadir focos
         brillo = 10
         self.setVector4(self.luzdifusa, 1.0, 1.0, 1.0, 1.0)
         self.setVector4(self.luzambiente, 0.50, 0.50, 0.50, 1.0)
@@ -157,6 +198,7 @@ class Mundo:
         self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])
         self.setVector4(self.mat_emission,  self.randoms[8], self.randoms[9], self.randoms[10], self.randoms[11])
 
+        #TODO Meter materiales
         mat = material.Material(self.mat_ambient, self.mat_specular, self.mat_emission)
         mat.putMaterial(brillo)
 

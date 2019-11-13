@@ -8,6 +8,17 @@ import random
 import foco
 
 class Mundo:
+    #GL_LIGHT
+    lights = {
+        0 : GL_LIGHT0,
+        1 : GL_LIGHT1,
+        2 : GL_LIGHT2,
+        3 : GL_LIGHT3,
+        4 : GL_LIGHT4,
+        5 : GL_LIGHT5,
+        6 : GL_LIGHT6,
+        7 : GL_LIGHT7,
+    }
 
     # Distintas opciones del menu.
     opcionesMenu = {
@@ -159,7 +170,6 @@ class Mundo:
     def loadTexture(self, image):
         glGenTextures(1, textureId)
         glBindTexture(GL_TEXTURE_2D, textureId)
-        #TODO Terminar
 
     def chooseCamera(self):
         if(self.iCamara == 10):
@@ -199,6 +209,8 @@ class Mundo:
         #Pintamos el modelo.
         i=0
         for cuerpo in self.astros:
+            #TODO ver por que dibuja mal las orbitas
+            glutWireTorus((cuerpo.getRadio()+5)*self.escalaGeneral, cuerpo.getRadio()*self.escalaGeneral, 30,1)
             glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
             self.drawModel(cuerpo,self.escalaGeneral,self.materialesCargados[i])
             i+=1
@@ -211,16 +223,16 @@ class Mundo:
             self.setVector4(self.luzspecular, self.focosCargados[i].getLuzSpecular()[0], self.focosCargados[i].getLuzSpecular()[1], self.focosCargados[i].getLuzSpecular()[2], self.focosCargados[i].getLuzSpecular()[3])
             self.setVector4(self.posicion0, self.focosCargados[i].getPosicion()[0], self.focosCargados[i].getPosicion()[1], self.focosCargados[i].getPosicion()[2], self.focosCargados[i].getPosicion()[3])
 
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, self.luzdifusa)
-            glLightfv(GL_LIGHT0, GL_AMBIENT, self.luzambiente)
-            glLightfv(GL_LIGHT0, GL_SPECULAR, self.luzspecular)
-            glLightfv(GL_LIGHT0, GL_POSITION, self.posicion0)
-            break
+            glLightfv(self.lights[i], GL_DIFFUSE, self.luzdifusa)
+            glLightfv(self.lights[i], GL_AMBIENT, self.luzambiente)
+            glLightfv(self.lights[i], GL_SPECULAR, self.luzspecular)
+            glLightfv(self.lights[i], GL_POSITION, self.posicion0)
+            
         #TODO corregir arriba y abajo
         glEnable(GL_LIGHTING)
         for i in range (self.NUM_FOCOS):
-            glEnable(GL_LIGHT0)
-            break
+            glEnable(self.lights[i])
+            
 
         self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
         self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])

@@ -19,7 +19,10 @@ class Mundo:
       "FORMA_1":6,
       "FORMA_2":7,
       "FORMA_3":8,
-      "FORMA_4":9
+      "FORMA_4":9,
+      "CAMARA_1":10,
+      "CAMARA_2":11,
+      "CAMARA_3":12
     }
     #Definimos los distintos colores que usaremos para visualizar nuestro Sistema Planetario.
     #Negro, Verde oscuro, Azul oscuro, Blanco, Verde claro, Azul claro
@@ -29,6 +32,7 @@ class Mundo:
     NUM_CAMARAS=None
     camaras=None
     camarasCargadas=[]
+    cam=None
 
     #Astros diferentes
     planetas=None
@@ -108,6 +112,7 @@ class Mundo:
         self.iDibujo=3
         self.iFondo=0
         self.iForma=6
+        self.iCamara=10
         
         self.mat_ambient=[None, None, None, None]
         self.mat_specular=[None, None, None, None]
@@ -154,6 +159,17 @@ class Mundo:
         glBindTexture(GL_TEXTURE_2D, textureId)
         #TODO Terminar
 
+    def chooseCamera(self):
+        if(self.iCamara == 10):
+            self.cam = self.camarasCargadas[0]
+            self.cam.setFrustum(30.0, self.aspect, 1.0, 100.0)
+        elif(self.iCamara == 11):
+            self.cam = self.camarasCargadas[1]
+            self.cam.setFrustum(30.0, self.aspect, 1.0, 10.0)
+        elif(self.iCamara == 12):
+            self.cam = self.camarasCargadas[2]
+            self.cam.setFrustum(30.0, self.aspect, 1.0, 10.0)
+
     def display(self):
         glClearDepth(1.0)
         glClearColor(self.colores[self.getIFondo()][0], self.colores[self.getIFondo()][1], self.colores[self.getIFondo()][2], 1.0)
@@ -162,14 +178,14 @@ class Mundo:
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
-        #TODO Adaptar a más camaras
-        cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
-        cam.locateFrustum()
+        #cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
+        self.chooseCamera()
+        self.cam.locateFrustum()
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        cam.locateCamera()
+        self.cam.locateCamera()
 
         glRotatef(self.alpha, 1.0, 0.0, 0.0)
         glRotatef(self.beta, 0.0, 1.0, 0.0)
@@ -269,6 +285,13 @@ class Mundo:
             self.setIForma(8)
         elif(opcion == self.opcionesMenu["FORMA_4"]):
             self.setIForma(9)
+        elif(opcion == self.opcionesMenu["CAMARA_1"]):
+            self.setICamara(10)
+        elif(opcion == self.opcionesMenu["CAMARA_2"]):
+            self.setICamara(11)
+        elif(opcion == self.opcionesMenu["CAMARA_3"]):
+            self.setICamara(12)
+
         glutPostRedisplay()
         return opcion
         
@@ -305,3 +328,9 @@ class Mundo:
 
     def getIForma(self):
         return self.iForma
+
+    def setICamara(self, iCamara):
+        self.iCamara = iCamara
+
+    def getICamara(self):
+        return self.iCamara

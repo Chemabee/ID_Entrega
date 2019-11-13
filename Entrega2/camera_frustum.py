@@ -14,3 +14,9 @@ class Camera_Frustum:
 
     def locateCamera(self):
         gluLookAt(self.eyeX, self.eyeY, self.eyeZ, self.cenX, self.cenY, self.cenZ, self.vp_X, self.vp_Y, self.vp_Z)
+
+    def setFrustum(self, alpha, aspect, zNear, zFar):
+        self.alpha = alpha
+        self.aspect = aspect
+        self.zNear = zNear
+        self.zFar = zFar

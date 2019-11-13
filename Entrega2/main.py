@@ -30,10 +30,17 @@ class Main:
         glutAddMenuEntry("Flat", self.mundo.opcionesMenu["FORMA_3"])
         glutAddMenuEntry("Smooth", self.mundo.opcionesMenu["FORMA_4"])
 
+        menuCamara = glutCreateMenu(self.mundo.onMenu)
+        glutAddMenuEntry("Camara 1", self.mundo.opcionesMenu["CAMARA_1"])
+        glutAddMenuEntry("Camara 2", self.mundo.opcionesMenu["CAMARA_2"])
+        glutAddMenuEntry("Camara 3", self.mundo.opcionesMenu["CAMARA_3"])
+        
         menuPrincipal = glutCreateMenu(self.mundo.onMenu)
         glutAddSubMenu("Color de fondo", menuFondo)
         glutAddSubMenu("Color del dibujo", menuDibujo)
         glutAddSubMenu("Forma", menuForma)
+        glutAddSubMenu("Camara", menuCamara)
+
         #Carga el menú con el boton derecho.
         glutAttachMenu(GLUT_RIGHT_BUTTON)
 

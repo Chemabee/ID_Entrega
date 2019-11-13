@@ -179,6 +179,7 @@ class Mundo:
             
         #Pintamos el modelo.
         for cuerpo in self.astros:
+            glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
             self.drawModel(cuerpo,self.escalaGeneral)
 
         #TODO añadir focos

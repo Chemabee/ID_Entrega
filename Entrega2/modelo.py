@@ -30,6 +30,9 @@ class Modelo:
         self.NumCaras = ncaras
         self.NumVertices = nvertices
         self.inicializarParametros()
+    
+    def getRadio(self):
+        return self.radio
 
     def setVector4(self,v, v0, v1, v2, v3):
         v[0]=v0
@@ -130,6 +133,7 @@ class Modelo:
 
     def Draw_Model(self, iForma, scale_from_editor, zoom):
         zoom = zoom * self.tamanio
+        radius = self.radio
         for face in self.ListaCaras:
             if(iForma == 6):    #Wired
                 glDisable(GL_LIGHTING)

@@ -131,7 +131,7 @@ class Modelo:
 
         return name, vertices, faces
 
-    def Draw_Model(self, iForma, scale_from_editor, zoom):
+    def Draw_Model(self, iForma, scale_from_editor, material, zoom):
         zoom = zoom * self.tamanio
         radius = self.radio
         for face in self.ListaCaras:
@@ -180,5 +180,5 @@ class Modelo:
                 """
 
             glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-            #TODO no sé cómo pintar este objeto en un punto concreto... Quizá solo haya que alejarlo del origen en RADIO unidades
+            material.putMaterial()
             glEnd()

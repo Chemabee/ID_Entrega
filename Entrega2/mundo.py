@@ -153,8 +153,8 @@ class Mundo:
         glEnd()
         glEnable(GL_LIGHTING)
 
-    def drawModel(self,forma, escala):
-        forma.Draw_Model(self.iForma, escala, self.zoom)
+    def drawModel(self,forma, escala, material):
+        forma.Draw_Model(self.iForma, escala, material, self.zoom)
 
     def loadTexture(self, image):
         glGenTextures(1, textureId)
@@ -167,10 +167,10 @@ class Mundo:
             self.cam.setFrustum(30.0, self.aspect, 1.0, 100.0)
         elif(self.iCamara == 11):
             self.cam = self.camarasCargadas[1]
-            self.cam.setFrustum(30.0, self.aspect, 1.0, 10.0)
+            self.cam.setFrustum(30.0, self.aspect, 20.0, 100.0)
         elif(self.iCamara == 12):
             self.cam = self.camarasCargadas[2]
-            self.cam.setFrustum(30.0, self.aspect, 1.0, 10.0)
+            self.cam.setFrustum(30.0, self.aspect, 10.0, 100.0)
 
     def display(self):
         glClearDepth(1.0)
@@ -189,6 +189,7 @@ class Mundo:
 
         self.cam.locateCamera()
 
+        #TODO Poner rotacion y mirar ejemplo 3
         glRotatef(self.alpha, 1.0, 0.0, 0.0)
         glRotatef(self.beta, 0.0, 1.0, 0.0)
 
@@ -196,9 +197,11 @@ class Mundo:
         glColor3f(self.colores[self.getIDibujo()][0], self.colores[self.getIDibujo()][1], self.colores[self.getIDibujo()][2])
             
         #Pintamos el modelo.
+        i=0
         for cuerpo in self.astros:
             glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
-            self.drawModel(cuerpo,self.escalaGeneral)
+            self.drawModel(cuerpo,self.escalaGeneral,self.materialesCargados[i])
+            i+=1
 
 
 
@@ -222,11 +225,6 @@ class Mundo:
         self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
         self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])
         self.setVector4(self.mat_emission,  self.randoms[8], self.randoms[9], self.randoms[10], self.randoms[11])
-
-        #TODO Meter materiales
-        brillo=10
-        mat = material.Material(self.mat_ambient, self.mat_specular, self.mat_emission)
-        mat.putMaterial(brillo)
 
         glFlush()
         glutSwapBuffers()
@@ -265,6 +263,11 @@ class Mundo:
         elif(key == chr(114).encode() or key == chr(82).encode()):
             for i in range(len(self.randoms)):
                 self.randoms[i]=random.random()
+        #elif(key == chr(49).encode()):
+            #self.activarFoco()
+
+    #def activarFoco(self, ):
+        #TODO       
 
     def setVector4(self, v, v0, v1, v2, v3):
         v[0] = v0

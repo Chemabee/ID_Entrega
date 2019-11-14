@@ -210,11 +210,19 @@ class Mundo:
         i=0
         for cuerpo in self.astros:
             #TODO ver por que dibuja mal las orbitas
-            glutWireTorus((cuerpo.getRadio()+5)*self.escalaGeneral, cuerpo.getRadio()*self.escalaGeneral, 30,1)
             glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
             self.drawModel(cuerpo,self.escalaGeneral,self.materialesCargados[i])
+            if(cuerpo.nombre=="Sol"):
+                glRotatef(90.0, 1.0, 0.0, 0.0)
+                for cuerpo in self.astros:
+                    glutWireTorus(0.001, cuerpo.getRadio()*self.escalaGeneral, 100, 100)
             i+=1
-
+        """
+        glRotatef(90.0, 1.0, 0.0, 0.0)
+        glTranslatef(0.0, 0.0, 0.0)
+        for cuerpo in self.astros:
+            glutWireTorus(0.001, cuerpo.getRadio()*self.escalaGeneral, 100, 100)
+"""
 
 
         for i in range (self.NUM_FOCOS):
@@ -228,10 +236,10 @@ class Mundo:
             glLightfv(self.lights[i], GL_SPECULAR, self.luzspecular)
             glLightfv(self.lights[i], GL_POSITION, self.posicion0)
             
-        #TODO corregir arriba y abajo
+        
         glEnable(GL_LIGHTING)
         for i in range (self.NUM_FOCOS):
-            glEnable(self.lights[i])
+            self.activarFoco(self.focosCargados[i], self.lights[i])
             
 
         self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
@@ -275,11 +283,30 @@ class Mundo:
         elif(key == chr(114).encode() or key == chr(82).encode()):
             for i in range(len(self.randoms)):
                 self.randoms[i]=random.random()
-        #elif(key == chr(49).encode()):
-            #self.activarFoco()
+        elif(key == chr(49).encode()):  #Tecla 1
+            self.focosCargados[0].cambiarEstado()
+            self.activarFoco(self.focosCargados[0], self.lights[0])
+        elif(key == chr(50).encode()):  #Tecla 2
+            self.focosCargados[1].cambiarEstado()
+            self.activarFoco(self.focosCargados[1], self.lights[1])
+        elif(key == chr(51).encode()):  #Tecla 3
+            self.focosCargados[2].cambiarEstado()
+            self.activarFoco(self.focosCargados[2], self.lights[2])
+        elif(key == chr(52).encode()):  #Tecla 4
+            self.focosCargados[3].cambiarEstado()
+            self.activarFoco(self.focosCargados[3], self.lights[3])
+        elif(key == chr(53).encode()):  #Tecla 5
+            self.focosCargados[4].cambiarEstado()
+            self.activarFoco(self.focosCargados[4], self.lights[4])
+        elif(key == chr(54).encode()):  #Tecla 6
+            self.focosCargados[5].cambiarEstado()
+            self.activarFoco(self.focosCargados[5], self.lights[5])
 
-    #def activarFoco(self, ):
-        #TODO       
+    def activarFoco(self, foco, nombreFoco):
+        if(foco.estaActivo()):
+            glEnable(nombreFoco)
+        else:
+            glDisable(nombreFoco)  
 
     def setVector4(self, v, v0, v1, v2, v3):
         v[0] = v0

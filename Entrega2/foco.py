@@ -26,6 +26,9 @@ class Foco:
         return self.luzspecular
     def getPosicion(self):
         return self.posicion
+
+    def estaActivo(self):
+        return self.activo
         
     def cambiarEstado(self):
         if self.activo:

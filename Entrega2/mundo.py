@@ -75,17 +75,28 @@ class Mundo:
         self.angulo = 0
         self.window=0
 
+        #**Cargamos Materiales**
+        self.materiales = data["materiales"]
+        self.NUM_MATERIALES = len(self.materiales)
+        for i in range (self.NUM_MATERIALES):
+            self.materialesCargados.append(material.Material(self.materiales[i]["luzambiente"], self.materiales[i]["luzspecular"], self.materiales[i]["luzdifusa"], self.materiales[i]["brillo"]))
+            print("&Material",i,"cargado desde JSON")
+
         #**Cargar Astros**
+        numLunas=0
         self.planetas = data["planetas"]
         self.NUM_ASTROS = len(self.planetas)
             #Aqui cargamos los datos en modelos y los guardamos en una lista llamada astros
         for i in range(self.NUM_ASTROS):
             if(self.planetas[i]["l"]=="n"):
-                self.astros.append(model.Modelo(self.planetas[i]))
+                numLunas=0
+                self.astros.append(model.Modelo(self.planetas[i], self.materialesCargados[i]))
                 print("&Planeta",i,"cargado desde JSON")
             elif(self.planetas[i]["l"]=="l"):
-                self.lunas.append(model.Modelo(self.planetas[i]))
-                print("&Luna",i,"cargado desde JSON")
+                numLunas+=1
+                self.astros[i-numLunas].addLuna(model.Modelo(self.planetas[i], self.materialesCargados[i]))
+                #self.lunas.append(model.Modelo(self.planetas[i], self.materialesCargados[i]))
+                print("&Luna",numLunas,"del planeta",self.astros[i-numLunas].nombre,"cargado desde JSON")
 
         #**Cargar Camaras**
         self.camaras = data["camaras"]
@@ -104,19 +115,13 @@ class Mundo:
             self.focosCargados.append(foco.Foco(self.focos[i]["brillo"], self.focos[i]["luzdifusa"], self.focos[i]["luzambiente"], self.focos[i]["luzspecular"], self.focos[i]["posicion"]))
             print("&Foco",i,"cargado desde JSON")
 
-        #**Cargamos Materiales**
-        self.materiales = data["materiales"]
-        self.NUM_MATERIALES = len(self.materiales)
-        for i in range (self.NUM_MATERIALES):
-            self.materialesCargados.append(material.Material(self.materiales[i]["luzambiente"], self.materiales[i]["luzspecular"], self.materiales[i]["luzdifusa"], self.materiales[i]["brillo"]))
-            print("&Material",i,"cargado desde JSON")
-
         #Tamaño de los ejes y del alejamiento de Z.
         self.tamanio=0
         self.z0=0
 
         #Factor para el tamaño del modelo.
         self.escalaGeneral = 0.013
+        self.multiplicadorVelocidad = 5
 
         #Rotacion de los modelos.
         self.alpha=0
@@ -133,17 +138,6 @@ class Mundo:
         self.iFondo=0
         self.iForma=6
         self.iCamara=10
-        
-        self.mat_ambient=[None, None, None, None]
-        self.mat_specular=[None, None, None, None]
-        self.mat_emission=[None, None, None, None]
-        self.luzdifusa=[None, None, None, None]
-        self.luzambiente=[None, None, None, None]
-        self.luzspecular=[None, None, None, None]
-        self.posicion0=[None, None, None, None]
-        self.rotacion=[None, None, None, None]
-
-        self.randoms=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
     def drawAxis(self):
         #Inicializamos
@@ -171,8 +165,8 @@ class Mundo:
         glEnd()
         glEnable(GL_LIGHTING)
 
-    def drawModel(self,forma, escala, material):
-        forma.Draw_Model(self.iForma, escala, material)
+    def drawModel(self,forma, escala):
+        forma.Draw_Model(self.iForma, escala)
 
     def loadTexture(self, image):
         glGenTextures(1, textureId)
@@ -218,51 +212,32 @@ class Mundo:
         for cuerpo in self.astros:
             glPushMatrix()
             tiempo = float(time.time() - self.starting_time)
-            print(tiempo)
-            glRotatef(tiempo*cuerpo.wRotAstro*5, 0.0, 1.0, 0.0)
+            glRotatef(tiempo*cuerpo.wRotAstro*self.multiplicadorVelocidad, 0.0, 1.0, 0.0)
             glTranslated(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
-            glRotatef(tiempo*cuerpo.wRotProp*5, 0.0, 1.0, 0.0)
-            self.drawModel(cuerpo,self.escalaGeneral,self.materialesCargados[i])
+            glRotatef(tiempo*cuerpo.wRotProp*self.multiplicadorVelocidad, 0.0, 1.0, 0.0)
+            self.drawModel(cuerpo,self.escalaGeneral)
             if(cuerpo.nombre=="Sol"):
                 glRotatef(90.0, 1.0, 0.0, 0.0)
                 for body in self.astros:
                     glutWireTorus(0.000, body.getRadio()*self.escalaGeneral, 100, 100)
             i+=1
-            if(cuerpo.nombre=="Neptuno"):
-                glRotatef(90.0, 1.0, 0.0, 0.0)
-                glutWireTorus(0.000, self.lunas[0].getRadio()*self.escalaGeneral, 100, 100)
-                glRotatef(tiempo*self.lunas[0].wRotAstro*5, 0.0, 0.0, -1.0)
-                glTranslated(self.lunas[0].getRadio()*self.escalaGeneral, 0.0, 0.0)
-                self.drawModel(self.lunas[0], self.escalaGeneral, self.materialesCargados[i])
+            if(len(cuerpo.lunas)>0):
+                for luna in cuerpo.lunas:
+                    glRotatef(90.0, 1.0, 0.0, 0.0)
+                    glutWireTorus(0.000, luna.getRadio()*self.escalaGeneral, 100, 100)
+                    glRotatef(tiempo*luna.wRotAstro*self.multiplicadorVelocidad, 0.0, 0.0, -1.0)
+                    glTranslated(luna.getRadio()*self.escalaGeneral, 0.0, 0.0)
+                    glRotatef(tiempo*luna.wRotProp*self.multiplicadorVelocidad, 0.0, 1.0, 0.0)
+                    self.drawModel(luna, self.escalaGeneral)
             glPopMatrix()
-        """
-        glRotatef(90.0, 1.0, 0.0, 0.0)
-        glTranslatef(0.0, 0.0, 0.0)
-        for cuerpo in self.astros:
-            glutWireTorus(0.001, cuerpo.getRadio()*self.escalaGeneral, 100, 100)
-"""
-
 
         for i in range (self.NUM_FOCOS):
-            self.setVector4(self.luzambiente, self.focosCargados[i].getLuzAmbiente()[0], self.focosCargados[i].getLuzAmbiente()[1], self.focosCargados[i].getLuzAmbiente()[2], self.focosCargados[i].getLuzAmbiente()[3])
-            self.setVector4(self.luzdifusa, self.focosCargados[i].getLuzDifusa()[0], self.focosCargados[i].getLuzDifusa()[1], self.focosCargados[i].getLuzDifusa()[2], self.focosCargados[i].getLuzDifusa()[3])
-            self.setVector4(self.luzspecular, self.focosCargados[i].getLuzSpecular()[0], self.focosCargados[i].getLuzSpecular()[1], self.focosCargados[i].getLuzSpecular()[2], self.focosCargados[i].getLuzSpecular()[3])
-            self.setVector4(self.posicion0, self.focosCargados[i].getPosicion()[0], self.focosCargados[i].getPosicion()[1], self.focosCargados[i].getPosicion()[2], self.focosCargados[i].getPosicion()[3])
-
-            glLightfv(self.lights[i], GL_DIFFUSE, self.luzdifusa)
-            glLightfv(self.lights[i], GL_AMBIENT, self.luzambiente)
-            glLightfv(self.lights[i], GL_SPECULAR, self.luzspecular)
-            glLightfv(self.lights[i], GL_POSITION, self.posicion0)
+            self.focosCargados[i].configurarFoco(i)
             
         
         glEnable(GL_LIGHTING)
         for i in range (self.NUM_FOCOS):
-            self.activarFoco(self.focosCargados[i], self.lights[i])
-            
-
-        self.setVector4(self.mat_ambient, self.randoms[0], self.randoms[1], self.randoms[2], self.randoms[3])
-        self.setVector4(self.mat_specular, self.randoms[4], self.randoms[5], self.randoms[6], self.randoms[7])
-        self.setVector4(self.mat_emission,  self.randoms[8], self.randoms[9], self.randoms[10], self.randoms[11])
+            self.focosCargados[i].habilitar_deshabilitarFoco(i)
 
         glFlush()
         glutSwapBuffers()
@@ -303,31 +278,25 @@ class Mundo:
                 self.randoms[i]=random.random()
         elif(key == chr(49).encode()):  #Tecla 1
             self.focosCargados[0].cambiarEstado()
-            self.activarFoco(self.focosCargados[0], self.lights[0])
+            self.focosCargados[0].habilitar_deshabilitarFoco(0)
         elif(key == chr(50).encode()):  #Tecla 2
             self.focosCargados[1].cambiarEstado()
-            self.activarFoco(self.focosCargados[1], self.lights[1])
+            self.focosCargados[1].habilitar_deshabilitarFoco(1)
         elif(key == chr(51).encode()):  #Tecla 3
             self.focosCargados[2].cambiarEstado()
-            self.activarFoco(self.focosCargados[2], self.lights[2])
+            self.focosCargados[2].habilitar_deshabilitarFoco(2)
         elif(key == chr(52).encode()):  #Tecla 4
             self.focosCargados[3].cambiarEstado()
-            self.activarFoco(self.focosCargados[3], self.lights[3])
+            self.focosCargados[3].habilitar_deshabilitarFoco(3)
         elif(key == chr(53).encode()):  #Tecla 5
             self.focosCargados[4].cambiarEstado()
-            self.activarFoco(self.focosCargados[4], self.lights[4])
+            self.focosCargados[4].habilitar_deshabilitarFoco(4)
         elif(key == chr(54).encode()):  #Tecla 6
             self.focosCargados[5].cambiarEstado()
-            self.activarFoco(self.focosCargados[5], self.lights[5])
+            self.focosCargados[5].habilitar_deshabilitarFoco(5)
         elif(key == chr(55).encode()):  #Tecla 7
             self.focosCargados[6].cambiarEstado()
-            self.activarFoco(self.focosCargados[6], self.lights[6])
-
-    def activarFoco(self, foco, nombreFoco):
-        if(foco.estaActivo()):
-            glEnable(nombreFoco)
-        else:
-            glDisable(nombreFoco)  
+            self.focosCargados[6].habilitar_deshabilitarFoco(6)
 
     def setVector4(self, v, v0, v1, v2, v3):
         v[0] = v0
@@ -376,12 +345,13 @@ class Mundo:
             cuerpo.setNCaras(len(caras))
             cuerpo.setCaras(caras)
             cuerpo.setVertices(vertices)
-        for luna in self.lunas:
-            _, vertices, caras = luna.load(modelo)
-            luna.setNVertices(len(vertices))
-            luna.setNCaras(len(caras))
-            luna.setCaras(caras)
-            luna.setVertices(vertices)
+            if(len(cuerpo.lunas)>0):
+                for luna in cuerpo.lunas:
+                    _, vertices, caras = luna.load(modelo)
+                    luna.setNVertices(len(vertices))
+                    luna.setNCaras(len(caras))
+                    luna.setCaras(caras)
+                    luna.setVertices(vertices)
 
     def getWidth(self):
         return self.width

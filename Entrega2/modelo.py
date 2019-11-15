@@ -20,7 +20,7 @@ class Modelo:
     numCaras=None
     NumVertices=None
 
-    def __init__(self, data, ncaras=None, nvertices=None):
+    def __init__(self, data, material, ncaras=None, nvertices=None):
         self.radio = data["radio"] #Se refiere a radio con respecto al centro que es el sol y tiene radio = 0
         self.wRotAstro = data["wRotAstro"]
         self.wRotProp = data["wRotProp"]
@@ -30,6 +30,8 @@ class Modelo:
         self.NumCaras = ncaras
         self.NumVertices = nvertices
         self.inicializarParametros()
+        self.material = material
+        self.lunas = []
     
     def getRadio(self):
         return self.radio
@@ -43,6 +45,9 @@ class Modelo:
     def inicializarParametros(self):
         self.alpha=0
         self.beta=0
+
+    def addLuna(self, luna):
+        self.lunas.append(luna)
 
     def getNCaras(self):
         return self.numCaras
@@ -131,7 +136,7 @@ class Modelo:
 
         return name, vertices, faces
 
-    def Draw_Model(self, iForma, scale_from_editor, material):
+    def Draw_Model(self, iForma, scale_from_editor):
         radius = self.radio
         for face in self.ListaCaras:
             if(iForma == 6):    #Wired
@@ -179,5 +184,5 @@ class Modelo:
                 """
 
             glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
-            material.putMaterial()
+            self.material.putMaterial()
             glEnd()

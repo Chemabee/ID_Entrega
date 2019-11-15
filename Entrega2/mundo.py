@@ -6,6 +6,7 @@ from OpenGL.GLU import *
 from OpenGL.GL import *
 import random
 import foco
+import time
 
 class Mundo:
     #GL_LIGHT
@@ -49,6 +50,7 @@ class Mundo:
     #Astros diferentes
     planetas=None
     astros=[]
+    lunas=[]
     NUM_ASTROS=None
 
     #Focos diferentes
@@ -61,6 +63,7 @@ class Mundo:
     materiales=None
     materialesCargados=[]
 
+    starting_time = time.time()
 
     def __init__(self, data =None):
         #Inicializamos todo:
@@ -77,8 +80,12 @@ class Mundo:
         self.NUM_ASTROS = len(self.planetas)
             #Aqui cargamos los datos en modelos y los guardamos en una lista llamada astros
         for i in range(self.NUM_ASTROS):
-            self.astros.append(model.Modelo(self.planetas[i]))
-            print("&Planeta",i,"cargado desde JSON")
+            if(self.planetas[i]["l"]=="n"):
+                self.astros.append(model.Modelo(self.planetas[i]))
+                print("&Planeta",i,"cargado desde JSON")
+            elif(self.planetas[i]["l"]=="l"):
+                self.lunas.append(model.Modelo(self.planetas[i]))
+                print("&Luna",i,"cargado desde JSON")
 
         #**Cargar Camaras**
         self.camaras = data["camaras"]
@@ -109,7 +116,7 @@ class Mundo:
         self.z0=0
 
         #Factor para el tamaño del modelo.
-        self.escalaGeneral = 0.005
+        self.escalaGeneral = 0.013
 
         #Rotacion de los modelos.
         self.alpha=0
@@ -165,7 +172,7 @@ class Mundo:
         glEnable(GL_LIGHTING)
 
     def drawModel(self,forma, escala, material):
-        forma.Draw_Model(self.iForma, escala, material, self.zoom)
+        forma.Draw_Model(self.iForma, escala, material)
 
     def loadTexture(self, image):
         glGenTextures(1, textureId)
@@ -197,7 +204,7 @@ class Mundo:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        self.cam.locateCamera()
+        self.cam.locateCamera(self.zoom)
 
         #TODO Poner rotacion y mirar ejemplo 3
         glRotatef(self.alpha, 1.0, 0.0, 0.0)
@@ -209,14 +216,25 @@ class Mundo:
         #Pintamos el modelo.
         i=0
         for cuerpo in self.astros:
-            #TODO ver por que dibuja mal las orbitas
-            glTranslatef(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
+            glPushMatrix()
+            tiempo = float(time.time() - self.starting_time)
+            print(tiempo)
+            glRotatef(tiempo*cuerpo.wRotAstro*5, 0.0, 1.0, 0.0)
+            glTranslated(cuerpo.getRadio()*self.escalaGeneral, 0.0, 0.0)
+            glRotatef(tiempo*cuerpo.wRotProp*5, 0.0, 1.0, 0.0)
             self.drawModel(cuerpo,self.escalaGeneral,self.materialesCargados[i])
             if(cuerpo.nombre=="Sol"):
                 glRotatef(90.0, 1.0, 0.0, 0.0)
-                for cuerpo in self.astros:
-                    glutWireTorus(0.001, cuerpo.getRadio()*self.escalaGeneral, 100, 100)
+                for body in self.astros:
+                    glutWireTorus(0.000, body.getRadio()*self.escalaGeneral, 100, 100)
             i+=1
+            if(cuerpo.nombre=="Neptuno"):
+                glRotatef(90.0, 1.0, 0.0, 0.0)
+                glutWireTorus(0.000, self.lunas[0].getRadio()*self.escalaGeneral, 100, 100)
+                glRotatef(tiempo*self.lunas[0].wRotAstro*5, 0.0, 0.0, -1.0)
+                glTranslated(self.lunas[0].getRadio()*self.escalaGeneral, 0.0, 0.0)
+                self.drawModel(self.lunas[0], self.escalaGeneral, self.materialesCargados[i])
+            glPopMatrix()
         """
         glRotatef(90.0, 1.0, 0.0, 0.0)
         glTranslatef(0.0, 0.0, 0.0)
@@ -301,6 +319,9 @@ class Mundo:
         elif(key == chr(54).encode()):  #Tecla 6
             self.focosCargados[5].cambiarEstado()
             self.activarFoco(self.focosCargados[5], self.lights[5])
+        elif(key == chr(55).encode()):  #Tecla 7
+            self.focosCargados[6].cambiarEstado()
+            self.activarFoco(self.focosCargados[6], self.lights[6])
 
     def activarFoco(self, foco, nombreFoco):
         if(foco.estaActivo()):
@@ -355,6 +376,12 @@ class Mundo:
             cuerpo.setNCaras(len(caras))
             cuerpo.setCaras(caras)
             cuerpo.setVertices(vertices)
+        for luna in self.lunas:
+            _, vertices, caras = luna.load(modelo)
+            luna.setNVertices(len(vertices))
+            luna.setNCaras(len(caras))
+            luna.setCaras(caras)
+            luna.setVertices(vertices)
 
     def getWidth(self):
         return self.width

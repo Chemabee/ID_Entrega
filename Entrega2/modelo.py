@@ -131,54 +131,53 @@ class Modelo:
 
         return name, vertices, faces
 
-    def Draw_Model(self, iForma, scale_from_editor, material, zoom):
-        zoom = zoom * self.tamanio
+    def Draw_Model(self, iForma, scale_from_editor, material):
         radius = self.radio
         for face in self.ListaCaras:
             if(iForma == 6):    #Wired
                 glDisable(GL_LIGHTING)
                 glBegin(GL_LINES)
 
-                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].z * scale_from_editor * self.tamanio)
 
             elif(iForma == 7):  #Solid
                 glDisable(GL_LIGHTING)
                 glBegin(GL_POLYGON)
 
-                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].z * scale_from_editor * self.tamanio)
 
             elif(iForma == 8):  #Flat
                 glShadeModel(GL_FLAT)
                 glBegin(GL_POLYGON)
 
                 glNormal3f(face.normal.x, face.normal.y, face.normal.z)
-                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].z * scale_from_editor * self.tamanio)
 
             elif(iForma == 9):  #Smooth
                 glShadeModel(GL_SMOOTH)
                 glBegin(GL_POLYGON)
 
                 glNormal3f(self.ListaPuntos3D[face.a].x, self.ListaPuntos3D[face.a].y, self.ListaPuntos3D[face.a].z)
-                glVertex3f(self.ListaPuntos3D[face.a].x*scale_from_editor*zoom, self.ListaPuntos3D[face.a].y*scale_from_editor*zoom, self.ListaPuntos3D[face.a].z*scale_from_editor*zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.a].y*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.a].z*scale_from_editor*self.tamanio)
                 
                 glNormal3f(self.ListaPuntos3D[face.b].x, self.ListaPuntos3D[face.b].y, self.ListaPuntos3D[face.b].z)
-                glVertex3f(self.ListaPuntos3D[face.b].x*scale_from_editor*zoom, self.ListaPuntos3D[face.b].y*scale_from_editor*zoom, self.ListaPuntos3D[face.b].z*scale_from_editor*zoom)
+                glVertex3f(self.ListaPuntos3D[face.b].x*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.b].y*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.b].z*scale_from_editor*self.tamanio)
                 
                 glNormal3f(self.ListaPuntos3D[face.c].x, self.ListaPuntos3D[face.c].y, self.ListaPuntos3D[face.c].z)
-                glVertex3f(self.ListaPuntos3D[face.c].x*scale_from_editor*zoom, self.ListaPuntos3D[face.c].y*scale_from_editor*zoom, self.ListaPuntos3D[face.c].z*scale_from_editor*zoom)
+                glVertex3f(self.ListaPuntos3D[face.c].x*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.c].y*scale_from_editor*self.tamanio, self.ListaPuntos3D[face.c].z*scale_from_editor*self.tamanio)
 
                 """
-                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * zoom, self.ListaPuntos3D[face.b].y * scale_from_editor * zoom, self.ListaPuntos3D[face.b].z * scale_from_editor * zoom)
-                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * zoom, self.ListaPuntos3D[face.c].y * scale_from_editor * zoom, self.ListaPuntos3D[face.c].z * scale_from_editor * zoom)
+                glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.b].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.b].z * scale_from_editor * self.tamanio)
+                glVertex3f(self.ListaPuntos3D[face.c].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.c].z * scale_from_editor * self.tamanio)
                 """
 
-            glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * zoom, self.ListaPuntos3D[face.a].y * scale_from_editor * zoom, self.ListaPuntos3D[face.a].z * scale_from_editor * zoom)
+            glVertex3f(self.ListaPuntos3D[face.a].x * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].y * scale_from_editor * self.tamanio, self.ListaPuntos3D[face.a].z * scale_from_editor * self.tamanio)
             material.putMaterial()
             glEnd()

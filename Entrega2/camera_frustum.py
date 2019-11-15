@@ -12,8 +12,8 @@ class Camera_Frustum:
     def locateFrustum(self):
         gluPerspective(self.alpha, self.aspect, self.zNear,self.zFar)
 
-    def locateCamera(self):
-        gluLookAt(self.eyeX, self.eyeY, self.eyeZ, self.cenX, self.cenY, self.cenZ, self.vp_X, self.vp_Y, self.vp_Z)
+    def locateCamera(self, zoom):
+        gluLookAt(self.eyeX*zoom, self.eyeY*zoom, self.eyeZ*zoom, self.cenX, self.cenY, self.cenZ, self.vp_X, self.vp_Y, self.vp_Z)
 
     def setFrustum(self, alpha, aspect, zNear, zFar):
         self.alpha = alpha

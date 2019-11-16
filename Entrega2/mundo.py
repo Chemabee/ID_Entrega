@@ -7,6 +7,9 @@ from OpenGL.GL import *
 import random
 import foco
 import time
+from PIL import Image
+import numpy as np
+import random
 
 class Mundo:
     #GL_LIGHT
@@ -65,8 +68,18 @@ class Mundo:
 
     starting_time = time.time()
 
+    staTexture=None
+
+    H=1000
+    W=1000
+    im = None
+    d = []
+
     def __init__(self, data =None):
         #Inicializamos todo:
+        self.im = Image.open("stars.bmp")
+        self.d = np.array(self.im).reshape(-1,1)
+        self.im.close()
 
         #Variables de la clase
         self.width=800
@@ -121,7 +134,7 @@ class Mundo:
 
         #Factor para el tamaño del modelo.
         self.escalaGeneral = 0.013
-        self.multiplicadorVelocidad = 5
+        self.multiplicadorVelocidad = 15
 
         #Rotacion de los modelos.
         self.alpha=0
@@ -138,6 +151,8 @@ class Mundo:
         self.iFondo=0
         self.iForma=6
         self.iCamara=10
+
+        
 
     def drawAxis(self):
         #Inicializamos
@@ -191,6 +206,11 @@ class Mundo:
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
+        #Cargando fondo
+        glDisable(GL_DEPTH_TEST)
+        glDrawPixels(self.W, self.H, GL_LUMINANCE, GL_UNSIGNED_BYTE, (GLubyte * len(self.d))(*self.d))
+        glEnable(GL_DEPTH_TEST)
+
         #cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
         self.chooseCamera()
         self.cam.locateFrustum()
@@ -238,9 +258,12 @@ class Mundo:
         glEnable(GL_LIGHTING)
         for i in range (self.NUM_FOCOS):
             self.focosCargados[i].habilitar_deshabilitarFoco(i)
+ 
 
+        #Cerrando
         glFlush()
         glutSwapBuffers()
+
 
         
     #Funcion para gestionar los movimientos del raton.

@@ -74,6 +74,7 @@ class Mundo:
     W=1000
     im = None
     d = []
+    fondo=False
 
     def __init__(self, data =None):
         #Inicializamos todo:
@@ -207,9 +208,10 @@ class Mundo:
         glLoadIdentity()
 
         #Cargando fondo
-        glDisable(GL_DEPTH_TEST)
-        glDrawPixels(self.W, self.H, GL_LUMINANCE, GL_UNSIGNED_BYTE, (GLubyte * len(self.d))(*self.d))
-        glEnable(GL_DEPTH_TEST)
+        if(self.fondo):
+            glDisable(GL_DEPTH_TEST)
+            glDrawPixels(self.W, self.H, GL_LUMINANCE, GL_UNSIGNED_BYTE, (GLubyte * len(self.d))(*self.d))
+            glEnable(GL_DEPTH_TEST)
 
         #cam=cf.Camera_Frustum(1, 5, 5, 0, 0, 0, 0, 1, 0, 30.0, self.aspect, 1.0, 10.0)
         self.chooseCamera()
@@ -320,6 +322,11 @@ class Mundo:
         elif(key == chr(55).encode()):  #Tecla 7
             self.focosCargados[6].cambiarEstado()
             self.focosCargados[6].habilitar_deshabilitarFoco(6)
+        elif(key == chr(56).encode()):  #Tecla 8 para fondo
+            if(self.fondo == True):
+                self.fondo = False
+            else:
+                self.fondo = True
 
     def setVector4(self, v, v0, v1, v2, v3):
         v[0] = v0

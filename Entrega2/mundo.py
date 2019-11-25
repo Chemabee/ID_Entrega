@@ -70,15 +70,15 @@ class Mundo:
 
     staTexture=None
 
-    H=1000
-    W=1000
+    H=800
+    W=800
     im = None
     d = []
     fondo=False
 
     def __init__(self, data =None):
         #Inicializamos todo:
-        self.im = Image.open("stars.bmp")
+        self.im = Image.open("stars64.bmp")
         self.d = np.array(self.im).reshape(-1,1)
         self.im.close()
 

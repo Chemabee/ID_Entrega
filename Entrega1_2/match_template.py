@@ -5,6 +5,7 @@ class Match_Template:
     def __init__(self):
         self.template_img = None
         self.src_img = None
+        self.real_img = cv2.imread("lena.jpg", cv2.IMREAD_COLOR)
         self.result_mat = None
         self.minVal = None
         self.maxVal = None
@@ -37,12 +38,12 @@ class Match_Template:
             matchLoc = self.maxLoc
         
         cv2.rectangle(
-                self.src_img,
+                self.real_img,
                 matchLoc,
                 (matchLoc[0] + self.template_img.shape[1] , matchLoc[1] + self.template_img.shape[0]),
                 (255,0,0),
                 3)
-        cv2.imshow("Match Template", self.src_img)
+        cv2.imshow("Match Template", self.real_img)
 
         c = cv2.waitKey()
 

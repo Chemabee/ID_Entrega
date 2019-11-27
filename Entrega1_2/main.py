@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog
 import cv2
 import numpy as np
 import math
+import matchTemplate as mt
 
 NUM_LADOS=4
 
@@ -21,18 +22,6 @@ class Window:
         #Establecemos un título a la pantalla principal
         self.MainWindow.setWindowTitle("Looking for something")
 
-        #Inicializamos la imagen fuente y las de los contadores
-        self.image_source = QtGui.QImage(720, 540, QtGui.QImage.Format_RGB888)
-        self.image_counter1 = QtGui.QImage(304, 130, QtGui.QImage.Format_Indexed8)
-        self.image_counter2 = QtGui.QImage(304, 130, QtGui.QImage.Format_Indexed8)
-        self.image_counter3 = QtGui.QImage(304, 130, QtGui.QImage.Format_Indexed8)
-
-        #viewers
-        self.MainWindow.viewer_original.setPixmap(QtGui.QPixmap(self.image_source))
-        self.MainWindow.viewer_counter1.setPixmap(QtGui.QPixmap(self.image_counter1))
-        self.MainWindow.viewer_counter2.setPixmap(QtGui.QPixmap(self.image_counter2))
-        self.MainWindow.viewer_counter3.setPixmap(QtGui.QPixmap(self.image_counter3))
-
         #clipping button
         self.MainWindow.Clip_button.clicked.connect(self.clipping)
         
@@ -46,14 +35,20 @@ class Window:
 
             cropped = cv2.resize(cropped, (304, 130), cv2.INTER_CUBIC)
 
-            image = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
-            pixmap = QtGui.QPixmap()
-            pixmap.convertFromImage(image.rgbSwapped())
             if i == 0:
+                self.image_counter1 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                pixmap = QtGui.QPixmap()
+                pixmap.convertFromImage(self.image_counter1.rgbSwapped())
                 self.MainWindow.viewer_counter1.setPixmap(pixmap)
             elif i == 1:
+                self.image_counter2 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                pixmap = QtGui.QPixmap()
+                pixmap.convertFromImage(self.image_counter2.rgbSwapped())
                 self.MainWindow.viewer_counter2.setPixmap(pixmap)
             elif i == 2:
+                self.image_counter3 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                pixmap = QtGui.QPixmap()
+                pixmap.convertFromImage(self.image_counter3.rgbSwapped())
                 self.MainWindow.viewer_counter3.setPixmap(pixmap)
 
 
@@ -62,7 +57,9 @@ class Window:
         fn = QFileDialog.getOpenFileName(self.MainWindow, "Choose a frame to download", directory, "Images (*.png *.xpm *.jpg)")
         
         self.original_image = cv2.imread(str(fn[0]), cv2.IMREAD_COLOR)
+        mt.MatchTemplate(self.original_image)
         self.mat_original = cv2.resize(self.original_image, (720, 540), cv2.INTER_CUBIC)
+        
 
         image = QtGui.QImage(self.mat_original, 720, 540, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap()

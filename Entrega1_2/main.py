@@ -47,7 +47,7 @@ class Window:
     def make_filter(self):
         #Asignamos al vídeo 1 la imagen con filtro gaussiano y canny
         img = cv2.GaussianBlur(self.mat_original, (5,5),0)
-        tempV = cv2.Canny(img, 10, 10)
+        tempV = cv2.Canny(img, 60, 60)
 
         #Adquirimos el vector con los puntos de los contornos
         contours, _hierarchy = cv2.findContours(tempV, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -67,7 +67,6 @@ class Window:
                 #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
                 if max_cos < 0.2:
                     squares.append(cnt)
-        #cv2.drawContours( self.cv_video[1], squares, -1, (0, 255, 0), 4 )
         self.isSquare(squares)
 
     def angle_cos(self, p0, p1, p2):
@@ -78,8 +77,6 @@ class Window:
         minVar = 0.90
         maxVar = 1.1
         dist = lambda p1, p2: math.sqrt( abs((p1[0]-p2[0])**2)+abs((p1[1]-p2[1])**2) )
-        #cuadrados=[cnt for cnt in squares if (minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar)]
-        #rectangulos=[cnt for cnt in squares if (minVar >= dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) >= maxVar)]
         cuadrados, rectangulos = [], []
         for cnt in squares:
             if minVar < dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) and dist(cnt[0],cnt[1])/dist(cnt[1],cnt[2]) < maxVar:

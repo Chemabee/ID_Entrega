@@ -25,14 +25,23 @@ class Window:
         #clipping button
         self.MainWindow.Clip_button.clicked.connect(self.clipping)
         
-        #conexión del botón
+        #load button
         self.MainWindow.Load_button.clicked.connect(self.loadImage)
         
-        #Extract number button
+        #extract number button and windows
         self.MainWindow.OCR_button.clicked.connect(self.extractNumbers)
         self.res1 = self.MainWindow.resultado1
         self.res2 = self.MainWindow.resultado2
         self.res3 = self.MainWindow.resultado3
+
+        #global process button
+        self.MainWindow.GLOBAL_button.clicked.connect(self.globalProcess)
+
+    def globalProcess(self):
+        for i in range(12):
+            self.loadImage("capturas/capturas_{}.jpg".format(i+1))
+            self.clipping()
+            self.extractNumbers()
 
     def extractNumbers(self):
         num1 = self.nums[0][0][1]+self.nums[0][1][1]+self.nums[0][2][1]+'.'+self.nums[0][3][1]
@@ -69,13 +78,23 @@ class Window:
                 self.MainWindow.viewer_counter3.setPixmap(pixmap)
 
 
-    def loadImage (self):
-        directory = "capturas"
-        fn = QFileDialog.getOpenFileName(self.MainWindow, "Choose a frame to download", directory, "Images (*.png *.xpm *.jpg)")
+    def loadImage (self, dir=None):
+        if not dir:
+            directory = "capturas"
+            fn = QFileDialog.getOpenFileName(self.MainWindow, "Choose a frame to download", directory, "Images (*.png *.xpm *.jpg)")
+            img_fn = str(fn[0])
+        else:
+            img_fn = dir
         
-        self.original_image = cv2.imread(str(fn[0]), cv2.IMREAD_COLOR)
+        self.original_image = cv2.imread(img_fn, cv2.IMREAD_COLOR)
         self.mat_original = cv2.resize(self.original_image, (720, 540), cv2.INTER_CUBIC)
-        
+
+        self.MainWindow.viewer_counter1.clear()
+        self.MainWindow.viewer_counter2.clear()
+        self.MainWindow.viewer_counter3.clear()
+        self.res1.clear()
+        self.res2.clear()
+        self.res3.clear()
 
         image = QtGui.QImage(self.mat_original, 720, 540, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap()

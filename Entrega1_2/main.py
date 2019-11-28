@@ -31,22 +31,24 @@ class Window:
     def clipping(self):
         for i in range(len(rectangleAreas)):
             x, y, w, h = rectangleAreas[i][0], rectangleAreas[i][1], rectangleAreas[i][2], rectangleAreas[i][3]
-            cropped = self.original_image[y:y+h, x:x+w]
+            self.cropped = self.original_image[y:y+h, x:x+w]
+            mt.MatchTemplate(self.cropped)
 
-            cropped = cv2.resize(cropped, (304, 130), cv2.INTER_CUBIC)
+
+            self.cropped = cv2.resize(self.cropped, (304, 130), cv2.INTER_CUBIC)
 
             if i == 0:
-                self.image_counter1 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                self.image_counter1 = QtGui.QImage(self.cropped, 304, 130, QtGui.QImage.Format_RGB888)
                 pixmap = QtGui.QPixmap()
                 pixmap.convertFromImage(self.image_counter1.rgbSwapped())
                 self.MainWindow.viewer_counter1.setPixmap(pixmap)
             elif i == 1:
-                self.image_counter2 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                self.image_counter2 = QtGui.QImage(self.cropped, 304, 130, QtGui.QImage.Format_RGB888)
                 pixmap = QtGui.QPixmap()
                 pixmap.convertFromImage(self.image_counter2.rgbSwapped())
                 self.MainWindow.viewer_counter2.setPixmap(pixmap)
             elif i == 2:
-                self.image_counter3 = QtGui.QImage(cropped, 304, 130, QtGui.QImage.Format_RGB888)
+                self.image_counter3 = QtGui.QImage(self.cropped, 304, 130, QtGui.QImage.Format_RGB888)
                 pixmap = QtGui.QPixmap()
                 pixmap.convertFromImage(self.image_counter3.rgbSwapped())
                 self.MainWindow.viewer_counter3.setPixmap(pixmap)
@@ -57,7 +59,6 @@ class Window:
         fn = QFileDialog.getOpenFileName(self.MainWindow, "Choose a frame to download", directory, "Images (*.png *.xpm *.jpg)")
         
         self.original_image = cv2.imread(str(fn[0]), cv2.IMREAD_COLOR)
-        mt.MatchTemplate(self.original_image)
         self.mat_original = cv2.resize(self.original_image, (720, 540), cv2.INTER_CUBIC)
         
 

@@ -13,6 +13,7 @@ rectangleAreas=[                #x, y, ancho, alto
         (1030,850,400,140),
         (1030,1144,400,140)
     ]
+auxNameImg = ""
 
 class Window:
 
@@ -42,6 +43,14 @@ class Window:
             self.loadImage("capturas/capturas_{}.jpg".format(i+1))
             self.clipping()
             self.extractNumbers()
+        self.MainWindow.viewer_original.setText("GLOBAL PROCESS COMPLETE, CHECK out.txt")
+        self.MainWindow.viewer_counter1.clear()
+        self.MainWindow.viewer_counter2.clear()
+        self.MainWindow.viewer_counter3.clear()
+        self.res1.clear()
+        self.res2.clear()
+        self.res3.clear()
+
 
     def extractNumbers(self):
         num1 = self.nums[0][0][1]+self.nums[0][1][1]+self.nums[0][2][1]+'.'+self.nums[0][3][1]
@@ -50,6 +59,11 @@ class Window:
         self.res1.setText(num1)
         self.res2.setText(num2)
         self.res3.setText(num3)
+
+        f = open("out.txt", "a+")
+        f.write(self.auxNameImg+" "+num1+" "+num2+" "+num3+"\n")
+        f.close()
+
 
     def clipping(self):
         self.nums = []
@@ -85,6 +99,8 @@ class Window:
             img_fn = str(fn[0])
         else:
             img_fn = dir
+        
+        self.auxNameImg = img_fn
         
         self.original_image = cv2.imread(img_fn, cv2.IMREAD_COLOR)
         self.mat_original = cv2.resize(self.original_image, (720, 540), cv2.INTER_CUBIC)

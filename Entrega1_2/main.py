@@ -18,6 +18,8 @@ auxNameImg = ""
 class Window:
 
     def __init__(self):
+        f = open("out.txt", "w")
+        f.close()
         #Cargamos la pantalla principal
         self.MainWindow = uic.loadUi('mainwindow.ui')
         #Establecemos un título a la pantalla principal
@@ -135,14 +137,6 @@ class Window:
             cnt_len = cv2.arcLength(cnt, True)
             #Aproxima a la silueta mas simple posible
             cnt = cv2.approxPolyDP(cnt, 0.05*cnt_len, True)
-            #Primero comprueba que tiene 4 puntos, es decir 4 vértices, 4 lados. Despues establece el minimo de tamaño, a menor mas sensible.
-            #Por ultimo comprueba si la silueta es convexa, es decir, no tiene angulos internos > 180 y no tiene diagonales interiores
-            """if len(cnt) == NUM_LADOS and cv2.contourArea(cnt) > 1000 and cv2.isContourConvex(cnt):
-                cnt = cnt.reshape(-1, 2)
-                #Calcula el coseno máximo de entre los 4 puntos de cada silueta, el % es para iterar dando la vuelta a la lista de los 4 puntos
-                max_cos = np.max([self.angle_cos( cnt[i], cnt[(i+1) % NUM_LADOS], cnt[(i+2) % NUM_LADOS] ) for i in range(NUM_LADOS)])
-                #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
-                if max_cos < 0.2:"""
             squares.append(cnt)
         self.isSquare(squares)
 

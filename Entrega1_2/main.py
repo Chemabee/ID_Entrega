@@ -27,13 +27,28 @@ class Window:
         
         #conexión del botón
         self.MainWindow.Load_button.clicked.connect(self.loadImage)
+        
+        #Extract number button
+        self.MainWindow.OCR_button.clicked.connect(self.extractNumbers)
+        self.res1 = self.MainWindow.resultado1
+        self.res2 = self.MainWindow.resultado2
+        self.res3 = self.MainWindow.resultado3
+
+    def extractNumbers(self):
+        num1 = self.nums[0][0][1]+self.nums[0][1][1]+self.nums[0][2][1]+'.'+self.nums[0][3][1]
+        num2 = self.nums[1][0][1]+self.nums[1][1][1]+self.nums[1][2][1]+'.'+self.nums[1][3][1]
+        num3 = self.nums[2][0][1]+self.nums[2][1][1]+self.nums[2][2][1]+'.'+self.nums[2][3][1]
+        self.res1.setText(num1)
+        self.res2.setText(num2)
+        self.res3.setText(num3)
 
     def clipping(self):
+        self.nums = []
         for i in range(len(rectangleAreas)):
             x, y, w, h = rectangleAreas[i][0], rectangleAreas[i][1], rectangleAreas[i][2], rectangleAreas[i][3]
             self.cropped = self.original_image[y:y+h, x:x+w]
-            mt.MatchTemplate(self.cropped)
-
+            self.cropped, aux = mt.MatchTemplate().doMatch(self.cropped)
+            self.nums.append(aux)
 
             self.cropped = cv2.resize(self.cropped, (304, 130), cv2.INTER_CUBIC)
 

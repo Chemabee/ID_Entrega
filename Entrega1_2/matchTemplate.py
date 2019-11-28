@@ -4,7 +4,9 @@ from matplotlib import pyplot as plt
 import MTM
 
 class MatchTemplate:
-    def __init__(self, img_rgb):
+    def __init__(self):
+        pass
+    def doMatch(self, img_rgb):
         #img_rgb = cv2.imread('capturas/capturas_5.jpg')
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         templates = [['{}'.format(i), cv2.imread('./templates/{}.png'.format(i),0)]for i in range (10)]
@@ -25,4 +27,13 @@ class MatchTemplate:
                 cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0,0,255), 2)
                 i+=1
                 """
+        num = []
+        for i in range(len(res)):
+            num.append([res['BBox'][i][0], res['TemplateName'][i]])
+        print(num)
+        num.sort(key = self.sortFirst)
+        print(num)
         cv2.imwrite('res.png',img_rgb)
+        return img_rgb, num
+    def sortFirst(self,val):
+        return val[0]

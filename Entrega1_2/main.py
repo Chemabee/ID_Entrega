@@ -106,6 +106,7 @@ class Window:
         
         self.original_image = cv2.imread(img_fn, cv2.IMREAD_COLOR)
         self.mat_original = cv2.resize(self.original_image, (720, 540), cv2.INTER_CUBIC)
+        self.make_filter()
 
         self.MainWindow.viewer_counter1.clear()
         self.MainWindow.viewer_counter2.clear()
@@ -123,10 +124,11 @@ class Window:
     def make_filter(self):
         self.image_gray = cv2.cvtColor(self.mat_original, cv2.COLOR_BGR2GRAY)
         #Asignamos al vídeo 1 la imagen con filtro gaussiano y canny
-        img = cv2.GaussianBlur(self.image_gray, (5,5),10)
-        tempV = cv2.Canny(img, 1, 1)
-
-        cv2.imshow("Imagen gris", self.image_gray)
+       # img = cv2.GaussianBlur(self.image_gray, (5,5),0)
+       # tempV = cv2.threshold(img, 10, 250, cv2.ADAPTIVE_THRESH_GAUSSIAN_C)
+        self.image_gray = cv2.medianBlur(self.image_gray, 5)
+        tempV = cv2.adaptiveThreshold(self.image_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        #tempV = cv2.Canny(thres, 1, 1)
 
         #Adquirimos el vector con los puntos de los contornos
         contours, _hierarchy = cv2.findContours(tempV, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -137,7 +139,19 @@ class Window:
             cnt_len = cv2.arcLength(cnt, True)
             #Aproxima a la silueta mas simple posible
             cnt = cv2.approxPolyDP(cnt, 0.05*cnt_len, True)
+<<<<<<< Updated upstream
             squares.append(cnt)
+=======
+            #Primero comprueba que tiene 4 puntos, es decir 4 vértices, 4 lados. Despues establece el minimo de tamaño, a menor mas sensible.
+            #Por ultimo comprueba si la silueta es convexa, es decir, no tiene angulos internos > 180 y no tiene diagonales interiores
+            if len(cnt) == NUM_LADOS and cv2.contourArea(cnt) > 1000 and cv2.isContourConvex(cnt):
+                cnt = cnt.reshape(-1, 2)
+                #Calcula el coseno máximo de entre los 4 puntos de cada silueta, el % es para iterar dando la vuelta a la lista de los 4 puntos
+                max_cos = np.max([self.angle_cos( cnt[i], cnt[(i+1) % NUM_LADOS], cnt[(i+2) % NUM_LADOS] ) for i in range(NUM_LADOS)])
+                #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
+                if max_cos < 0.2:
+                    squares.append(cnt)
+>>>>>>> Stashed changes
         self.isSquare(squares)
 
     def angle_cos(self, p0, p1, p2):

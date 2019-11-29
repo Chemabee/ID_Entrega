@@ -139,9 +139,6 @@ class Window:
             cnt_len = cv2.arcLength(cnt, True)
             #Aproxima a la silueta mas simple posible
             cnt = cv2.approxPolyDP(cnt, 0.05*cnt_len, True)
-<<<<<<< Updated upstream
-            squares.append(cnt)
-=======
             #Primero comprueba que tiene 4 puntos, es decir 4 vértices, 4 lados. Despues establece el minimo de tamaño, a menor mas sensible.
             #Por ultimo comprueba si la silueta es convexa, es decir, no tiene angulos internos > 180 y no tiene diagonales interiores
             if len(cnt) == NUM_LADOS and cv2.contourArea(cnt) > 1000 and cv2.isContourConvex(cnt):
@@ -151,7 +148,6 @@ class Window:
                 #Comprueba que el angulo sea de 90 grados, con holgura para poder pillarlo en diagonal
                 if max_cos < 0.2:
                     squares.append(cnt)
->>>>>>> Stashed changes
         self.isSquare(squares)
 
     def angle_cos(self, p0, p1, p2):

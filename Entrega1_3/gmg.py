@@ -36,7 +36,7 @@ while(1):
     cnts = imutils.grab_contours(cnts)
     if(len(cnts)!=0):
         c = max(cnts, key = cv2.contourArea)
-    #for c in cnts:
+
         M = cv2.moments(c)
         cX = int(M["m10"] / (M["m00"]+0.00005))
         cY = int(M["m01"] / (M["m00"]+0.00005))

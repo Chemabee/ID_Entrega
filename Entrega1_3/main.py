@@ -1,9 +1,11 @@
 import sys
 from PyQt5 import uic,QtGui,QtCore
-from PyQt5.QtWidgets import QApplication, QFileDialog, QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtGui import QIcon, QPixmap
 import cv2
 import numpy as np
 import math
+import imutils
 
 
 
@@ -41,7 +43,11 @@ class Window:
 
             #Current
             ##cv2.imshow('Real video',frame)
-            self.MainWindow.video_source.setPixmap(QPixmap(frame))
+
+            image = QtGui.QImage(frame, frame.shape[1], frame.shape[0], frame.shape[1] * 3,QtGui.QImage.Format_RGB888)
+            pix = QtGui.QPixmap(image)
+
+            self.MainWindow.video_source.setPixmap(pix)
 
             #Current en GreyScale
             currGreyImg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -83,6 +89,8 @@ class Window:
                 break
         self.cap.release()
         cv2.destroyAllWindows()
+
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

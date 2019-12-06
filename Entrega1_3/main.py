@@ -17,6 +17,10 @@ class Window:
     speed_ = 60
     pause = False
 
+    originState = 0
+    lastState = 0
+    counter = 1 #Se podria poner a none y que dependiendo por donde aparezca el primer centroide te lo ponga a 1 o 0 TODO
+
     def __init__(self):
         self.MainWindow = uic.loadUi('mainwindow.ui')
         self.MainWindow.setWindowTitle("Entrega 3 - Looking for something")
@@ -87,9 +91,6 @@ class Window:
             #while ret:
             finalImg = frame
 
-            #Current
-
-
             #Current en GreyScale
             currGreyImg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -106,6 +107,10 @@ class Window:
             #Centroid Image
             cnts = cv2.findContours(thImg.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             cnts = imutils.grab_contours(cnts)
+
+            y1 = int((35*self.MainWindow.spinBarrera1.value()/10))
+            y2 = int((35*self.MainWindow.spinBarrera2.value()/10))
+
             if(len(cnts)!=0):
                 c = max(cnts, key = cv2.contourArea)
 
@@ -119,9 +124,50 @@ class Window:
                 cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
                 cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
 
+                #Reescale point
+                cY = int(cY/200 * 350)
+                #Process state of point
+                
+                
+                if cY < y2:
+                    #print("0",cY)
+                    #print("0",y1)
+                    #Encima de la barrera alta
+                    if self.lastState == 1:
+                        #Pasa de estado 1 a estado 0 (medio a arriba)
+                        print("cambiando estado origen")
+                        self.lastState = 0
+                        if self.originState == 2:
+                            #Ha entrado en la habitacion
+                            self.counter +=1
+                            print(self.counter)
+                        self.originState == 0
+                elif cY > y2 and cY < y1:
+                    #Entre ambas barreras
+                    #print("1")
+                    if self.lastState == 0:
+                        #Pasa de estado 0 a estado 1 (arriba a medio)
+                        self.lastState = 1
+                    elif self.lastState == 2:
+                        #Pasa de estado 2 a estado 1 (debajo a medio)
+                        self.lastState = 1
+                elif cY > y1:
+                    #Debajo de la barrera baja
+                    #print("2",cY)
+                    #print("2",y1)
+                    if self.lastState == 1:
+                        #Pasa de estado 1 a estado 2 (medio a debajo)
+                        print("cambiando estado origen")
+                        self.lastState = 2
+                        if self.originState == 0:
+                            #Ha salido de la habitacion
+                            
+                            self.counter-=1
+                            print(self.counter)
+                        self.originState=2 
+
             finalImg = cv2.resize(finalImg, (500, 350))
-            y1 = 350-self.MainWindow.sliderBarrera1.value()
-            y2 = 350-self.MainWindow.sliderBarrera2.value()
+            
             cv2.line(finalImg, (0,y1), (500,y1), (255,0,0), thickness=3)
             cv2.line(finalImg, (0,y2), (500,y2), (0,255,0), thickness=3)
             image = QtGui.QImage(finalImg, finalImg.shape[1], finalImg.shape[0], finalImg.shape[1] * 3,QtGui.QImage.Format_RGB888)

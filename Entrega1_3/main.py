@@ -17,13 +17,15 @@ class Window:
     speed_ = 60
     pause = False
 
-    originState = 0
-    lastState = 0
+    state = (1,1)   #(1,1): Dentro | (1,0): Saliendo | (0,1): Entrando | (0,0): Fuera
     counter = 1 #Se podria poner a none y que dependiendo por donde aparezca el primer centroide te lo ponga a 1 o 0 TODO
 
     def __init__(self):
         self.MainWindow = uic.loadUi('mainwindow.ui')
         self.MainWindow.setWindowTitle("Entrega 3 - Looking for something")
+
+
+        self.MainWindow.counter.setText("Counter: " + str(self.counter))
 
         self.MainWindow.sliderBarrera1.setRange(0, 350)
         self.MainWindow.spinBarrera1.setRange(0, 350)
@@ -57,6 +59,7 @@ class Window:
 
     def restart(self):
         self.closeWindows()
+        self.counter = 1
         self.cap = cv2.VideoCapture('video.wmv')
         self.timer_frames.start()
 
@@ -108,9 +111,33 @@ class Window:
             cnts = cv2.findContours(thImg.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             cnts = imutils.grab_contours(cnts)
 
-            y1 = int((35*self.MainWindow.spinBarrera1.value()/10))
-            y2 = int((35*self.MainWindow.spinBarrera2.value()/10))
+            lowerBarrier = int((35*self.MainWindow.spinBarrera1.value()/10))
+            upperBarrier = int((35*self.MainWindow.spinBarrera2.value()/10))
 
+            self.changeState()
+
+            finalImg = cv2.resize(finalImg, (500, 350))
+            
+            cv2.line(finalImg, (0,lowerBarrier), (500,lowerBarrier), (255,0,0), thickness=3)
+            cv2.line(finalImg, (0,upperBarrier), (500,upperBarrier), (0,255,0), thickness=3)
+            image = QtGui.QImage(finalImg, finalImg.shape[1], finalImg.shape[0], finalImg.shape[1] * 3,QtGui.QImage.Format_RGB888)
+
+            pix = QtGui.QPixmap(image)
+
+            self.MainWindow.video_source.setPixmap(pix)
+
+            if self.debug_:
+                cv2.imshow('Real video',frame)
+                cv2.imshow('Current Grey Scale Image', currGreyImg)
+                cv2.imshow('Reference Grey Image', refGreyImg)
+                cv2.imshow('Absolute Difference Image', diff)
+                cv2.imshow('Threshold Image', thImg)
+        else:
+            self.MainWindow.video_source.setText("The video has ended")
+            self.closeWindows()
+            self.timer_frames.stop()
+
+        def changeState(self):
             if(len(cnts)!=0):
                 c = max(cnts, key = cv2.contourArea)
 
@@ -129,63 +156,42 @@ class Window:
                 #Process state of point
                 
                 
-                if cY < y2:
-                    #print("0",cY)
-                    #print("0",y1)
-                    #Encima de la barrera alta
-                    if self.lastState == 1:
-                        #Pasa de estado 1 a estado 0 (medio a arriba)
-                        print("cambiando estado origen")
-                        self.lastState = 0
-                        if self.originState == 2:
-                            #Ha entrado en la habitacion
-                            self.counter +=1
-                            print(self.counter)
-                        self.originState == 0
-                elif cY > y2 and cY < y1:
-                    #Entre ambas barreras
-                    #print("1")
-                    if self.lastState == 0:
-                        #Pasa de estado 0 a estado 1 (arriba a medio)
-                        self.lastState = 1
-                    elif self.lastState == 2:
-                        #Pasa de estado 2 a estado 1 (debajo a medio)
-                        self.lastState = 1
-                elif cY > y1:
-                    #Debajo de la barrera baja
-                    #print("2",cY)
-                    #print("2",y1)
-                    if self.lastState == 1:
-                        #Pasa de estado 1 a estado 2 (medio a debajo)
-                        print("cambiando estado origen")
-                        self.lastState = 2
-                        if self.originState == 0:
-                            #Ha salido de la habitacion
-                            
-                            self.counter-=1
-                            print(self.counter)
-                        self.originState=2 
-
-            finalImg = cv2.resize(finalImg, (500, 350))
-            
-            cv2.line(finalImg, (0,y1), (500,y1), (255,0,0), thickness=3)
-            cv2.line(finalImg, (0,y2), (500,y2), (0,255,0), thickness=3)
-            image = QtGui.QImage(finalImg, finalImg.shape[1], finalImg.shape[0], finalImg.shape[1] * 3,QtGui.QImage.Format_RGB888)
-
-            pix = QtGui.QPixmap(image)
-
-            self.MainWindow.video_source.setPixmap(pix)
-
-            if self.debug_:
-                cv2.imshow('Real video',frame)
-                cv2.imshow('Current Grey Scale Image', currGreyImg)
-                cv2.imshow('Reference Grey Image', refGreyImg)
-                cv2.imshow('Absolute Difference Image', diff)
-                cv2.imshow('Threshold Image', thImg)
-        else:
-            self.MainWindow.video_source.setText("The video has ended")
-            self.closeWindows()
-            self.timer_frames.stop()
+                if cY < upperBarrier:
+                    #Encima de la barrera alta (dentro)
+                    if self.state == (0,1):
+                        #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
+                        print("Dentro")
+                        self.state = (1,1)
+                        self.counter +=1
+                        self.MainWindow.counter.setText("Counter: " + str(self.counter))
+                        print(self.counter)
+                    elif self.state == (1,0):
+                        #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
+                        print("Dentro")
+                        self.state = (1,1)
+                elif cY > upperBarrier and cY < lowerBarrier:
+                    #Entre ambas barreras (entrando o saliendo)
+                    if self.state == (1,1):
+                        #Pasa de estado (1,1) a estado (1,0) (arriba a medio)
+                        print("Saliendo")
+                        self.state = (1,0)
+                    elif self.state == (0,0):
+                        #Pasa de estado (0,0) a estado (0,1) (abajo a medio)
+                        print("Entrando")
+                        self.state = (0,1)
+                elif cY > lowerBarrier:
+                    #Debajo de la barrera baja (fuera)
+                    if self.state == (1,0):
+                        #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
+                        print("Fuera")
+                        self.state = (0,0)
+                        self.counter -=1
+                        self.MainWindow.counter.setText("Counter: " + str(self.counter))
+                        print(self.counter)
+                    elif self.state == (1,0):
+                        #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
+                        print("Fuera")
+                        self.state = (0,0)
 
 
 if __name__ == "__main__":

@@ -114,7 +114,24 @@ class Window:
             lowerBarrier = int((35*self.MainWindow.spinBarrera1.value()/10))
             upperBarrier = int((35*self.MainWindow.spinBarrera2.value()/10))
 
-            self.changeState()
+            if(len(cnts)!=0):
+                c = max(cnts, key = cv2.contourArea)
+
+                M = cv2.moments(c)
+                cX = int(M["m10"] / (M["m00"]+0.00005))
+                cY = int(M["m01"] / (M["m00"]+0.00005))
+                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+                cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
+        
+                # draw the contour and center of the shape on the image
+                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+                cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
+
+                #Reescale point
+                cY = int(cY/200 * 350)
+                #Process state of point
+                
+                self.changeState(cY, lowerBarrier, upperBarrier)
 
             finalImg = cv2.resize(finalImg, (500, 350))
             
@@ -137,61 +154,43 @@ class Window:
             self.closeWindows()
             self.timer_frames.stop()
 
-        def changeState(self):
-            if(len(cnts)!=0):
-                c = max(cnts, key = cv2.contourArea)
-
-                M = cv2.moments(c)
-                cX = int(M["m10"] / (M["m00"]+0.00005))
-                cY = int(M["m01"] / (M["m00"]+0.00005))
-                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-                cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
-        
-                # draw the contour and center of the shape on the image
-                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-                cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
-
-                #Reescale point
-                cY = int(cY/200 * 350)
-                #Process state of point
-                
-                
-                if cY < upperBarrier:
-                    #Encima de la barrera alta (dentro)
-                    if self.state == (0,1):
-                        #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
-                        print("Dentro")
-                        self.state = (1,1)
-                        self.counter +=1
-                        self.MainWindow.counter.setText("Counter: " + str(self.counter))
-                        print(self.counter)
-                    elif self.state == (1,0):
-                        #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
-                        print("Dentro")
-                        self.state = (1,1)
-                elif cY > upperBarrier and cY < lowerBarrier:
-                    #Entre ambas barreras (entrando o saliendo)
-                    if self.state == (1,1):
-                        #Pasa de estado (1,1) a estado (1,0) (arriba a medio)
-                        print("Saliendo")
-                        self.state = (1,0)
-                    elif self.state == (0,0):
-                        #Pasa de estado (0,0) a estado (0,1) (abajo a medio)
-                        print("Entrando")
-                        self.state = (0,1)
-                elif cY > lowerBarrier:
-                    #Debajo de la barrera baja (fuera)
-                    if self.state == (1,0):
-                        #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
-                        print("Fuera")
-                        self.state = (0,0)
-                        self.counter -=1
-                        self.MainWindow.counter.setText("Counter: " + str(self.counter))
-                        print(self.counter)
-                    elif self.state == (1,0):
-                        #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
-                        print("Fuera")
-                        self.state = (0,0)
+    def changeState(self, cY, lowerBarrier, upperBarrier):        
+        if cY < upperBarrier:
+            #Encima de la barrera alta (dentro)
+            if self.state == (0,1):
+                #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
+                print("Dentro")
+                self.state = (1,1)
+                self.counter +=1
+                self.MainWindow.counter.setText("Counter: " + str(self.counter))
+                print(self.counter)
+            elif self.state == (1,0):
+                #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
+                print("Dentro")
+                self.state = (1,1)
+        elif cY > upperBarrier and cY < lowerBarrier:
+            #Entre ambas barreras (entrando o saliendo)
+            if self.state == (1,1):
+                #Pasa de estado (1,1) a estado (1,0) (arriba a medio)
+                print("Saliendo")
+                self.state = (1,0)
+            elif self.state == (0,0):
+                #Pasa de estado (0,0) a estado (0,1) (abajo a medio)
+                print("Entrando")
+                self.state = (0,1)
+        elif cY > lowerBarrier:
+            #Debajo de la barrera baja (fuera)
+            if self.state == (1,0):
+                #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
+                print("Fuera")
+                self.state = (0,0)
+                self.counter -=1
+                self.MainWindow.counter.setText("Counter: " + str(self.counter))
+                print(self.counter)
+            elif self.state == (1,0):
+                #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
+                print("Fuera")
+                self.state = (0,0)
 
 
 if __name__ == "__main__":

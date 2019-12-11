@@ -187,7 +187,7 @@ class Window:
                 self.counter -=1
                 self.MainWindow.counter.setText("Counter: " + str(self.counter))
                 print(self.counter)
-            elif self.state == (1,0):
+            elif self.state == (0,1):
                 #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
                 print("Fuera")
                 self.state = (0,0)

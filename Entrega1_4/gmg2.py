@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import cv2
 import numpy as np
-cap = cv2.VideoCapture('M6MotorwayTraffic.mp4')
+cap = cv2.VideoCapture('M6MotorwayTraffic_cut.mp4')
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 fgbg = cv2.createBackgroundSubtractorMOG2()
  

@@ -3,8 +3,9 @@ import cv2
 import numpy as np
 import imutils
 
-cap = cv2.VideoCapture('video.wmv')
-ret, originalFrame = cap.read()
+cap = cv2.VideoCapture('M6MotorwayTraffic_cut.mp4')
+#cap.set(cv2.CAP_PROP_POS_MSEC, 7500)
+originalFrame = cv2.imread('original.png')
 
  
 while(1):
@@ -35,17 +36,18 @@ while(1):
     cnts = cv2.findContours(thImg.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     if(len(cnts)!=0):
-        c = max(cnts, key = cv2.contourArea)
+        for c in cnts:
+            #c = max(cnts, key = cv2.contourArea)
 
-        M = cv2.moments(c)
-        cX = int(M["m10"] / (M["m00"]+0.00005))
-        cY = int(M["m01"] / (M["m00"]+0.00005))
-        cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-        cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
- 
-	    # draw the contour and center of the shape on the image
-        cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-        cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
+            M = cv2.moments(c)
+            cX = int(M["m10"] / (M["m00"]+0.00005))
+            cY = int(M["m01"] / (M["m00"]+0.00005))
+            cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+            cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
+    
+            # draw the contour and center of the shape on the image
+            cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+            cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
     cv2.imshow('Centroide', finalImg)
 
 

@@ -11,11 +11,13 @@ import imutils
 
 
 class Window:
-    cap = cv2.VideoCapture('video.wmv')
+    cap = cv2.VideoCapture('M6MotorwayTraffic_cut.mp4')
     ret, originalFrame = cap.read()
     debug_ = False
     speed_ = 60
     pause = False
+
+    sub = cv2.createBackgroundSubtractorMOG2()
 
     state = (1,1)   #(1,1): Dentro | (1,0): Saliendo | (0,1): Entrando | (0,0): Fuera
     counter = 1 #Se podria poner a none y que dependiendo por donde aparezca el primer centroide te lo ponga a 1 o 0 TODO
@@ -39,8 +41,8 @@ class Window:
         self.MainWindow.sliderBarrera1.valueChanged.connect(self.change_barrier)
         self.MainWindow.sliderBarrera2.valueChanged.connect(self.change_barrier)
 
-        self.MainWindow.sliderBarrera1.setValue(60)
-        self.MainWindow.sliderBarrera2.setValue(160)
+        self.MainWindow.sliderBarrera1.setValue(155)
+        self.MainWindow.sliderBarrera2.setValue(175)
 
         self.MainWindow.buttonPause.clicked.connect(self.onPause)
         self.MainWindow.buttonRestart.clicked.connect(self.restart)
@@ -60,7 +62,7 @@ class Window:
     def restart(self):
         self.closeWindows()
         self.counter = 1
-        self.cap = cv2.VideoCapture('video.wmv')
+        self.cap = cv2.VideoCapture('M6MotorwayTraffic_cut.mp4')
         self.timer_frames.start()
 
     def speed(self):
@@ -98,14 +100,24 @@ class Window:
             currGreyImg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             #Reference Grey Image
-            refGreyImg = cv2.cvtColor(self.originalFrame, cv2.COLOR_BGR2GRAY)
+            #refGreyImg = cv2.cvtColor(self.originalFrame, cv2.COLOR_BGR2GRAY)
 
             #Absolute Difference Image
-            diff = cv2.absdiff(currGreyImg, refGreyImg)
+            #diff = cv2.absdiff(currGreyImg, refGreyImg)
 
+            diff = self.sub.apply(currGreyImg) 
+
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))  # kernel to apply to the morphology
+            
+            closing = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
+            
+            opening = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
+            
+            dilation = cv2.dilate(opening, kernel)
+            
             #Thresholding Difference Image
-            blurred = cv2.GaussianBlur(diff, (5, 5), 0)
-            thImg = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]
+            blurred = cv2.GaussianBlur(dilation, (5, 5), 0)
+            thImg = cv2.threshold(blurred, 130, 255, cv2.THRESH_BINARY)[1]
 
             #Centroid Image
             cnts = cv2.findContours(thImg.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -115,23 +127,24 @@ class Window:
             upperBarrier = int((35*self.MainWindow.spinBarrera2.value()/10))
 
             if(len(cnts)!=0):
-                c = max(cnts, key = cv2.contourArea)
-
-                M = cv2.moments(c)
-                cX = int(M["m10"] / (M["m00"]+0.00005))
-                cY = int(M["m01"] / (M["m00"]+0.00005))
-                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-                cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
-        
-                # draw the contour and center of the shape on the image
-                cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
-                cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
-
-                #Reescale point
-                cY = int(cY/200 * 350)
-                #Process state of point
+                for c in cnts:
+                    #c = max(cnts, key = cv2.contourArea)
+                    if cv2.contourArea(c) > 1500:
+                        M = cv2.moments(c)
+                        cX = int(M["m10"] / (M["m00"]+0.00005))
+                        cY = int(M["m01"] / (M["m00"]+0.00005))
+                        cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+                        cv2.circle(finalImg, (cX, cY), 7, (255, 255, 255), -1)
                 
-                self.changeState(cY, lowerBarrier, upperBarrier)
+                        # draw the contour and center of the shape on the image
+                        cv2.drawContours(finalImg, [c], -1, (0, 255, 0), 2)
+                        cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
+
+                        #Reescale point
+                        cY = int(cY/200 * 350)
+                        #Process state of point
+                        
+                        self.changeState(cY, lowerBarrier, upperBarrier)
 
             finalImg = cv2.resize(finalImg, (500, 350))
             
@@ -146,7 +159,6 @@ class Window:
             if self.debug_:
                 cv2.imshow('Real video',frame)
                 cv2.imshow('Current Grey Scale Image', currGreyImg)
-                cv2.imshow('Reference Grey Image', refGreyImg)
                 cv2.imshow('Absolute Difference Image', diff)
                 cv2.imshow('Threshold Image', thImg)
         else:
@@ -154,43 +166,11 @@ class Window:
             self.closeWindows()
             self.timer_frames.stop()
 
-    def changeState(self, cY, lowerBarrier, upperBarrier):        
-        if cY < upperBarrier:
-            #Encima de la barrera alta (dentro)
-            if self.state == (0,1):
-                #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
-                print("Dentro")
-                self.state = (1,1)
-                self.counter +=1
-                self.MainWindow.counter.setText("Counter: " + str(self.counter))
-                print(self.counter)
-            elif self.state == (1,0):
-                #Pasa de estado (0,1) a estado (1,1) (medio a arriba)
-                print("Dentro")
-                self.state = (1,1)
-        elif cY > upperBarrier and cY < lowerBarrier:
-            #Entre ambas barreras (entrando o saliendo)
-            if self.state == (1,1):
-                #Pasa de estado (1,1) a estado (1,0) (arriba a medio)
-                print("Saliendo")
-                self.state = (1,0)
-            elif self.state == (0,0):
-                #Pasa de estado (0,0) a estado (0,1) (abajo a medio)
-                print("Entrando")
-                self.state = (0,1)
-        elif cY > lowerBarrier:
-            #Debajo de la barrera baja (fuera)
-            if self.state == (1,0):
-                #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
-                print("Fuera")
-                self.state = (0,0)
-                self.counter -=1
-                self.MainWindow.counter.setText("Counter: " + str(self.counter))
-                print(self.counter)
-            elif self.state == (0,1):
-                #Pasa de estado (1,0) a estado (0,0) (medio a abajo)
-                print("Fuera")
-                self.state = (0,0)
+    def changeState(self, cY, lowerBarrier, upperBarrier): 
+        if cY > upperBarrier and cY < lowerBarrier:
+            self.counter += 1
+            self.MainWindow.counter.setText("Counter: " + str(self.counter))
+            print(self.counter)
 
 
 if __name__ == "__main__":

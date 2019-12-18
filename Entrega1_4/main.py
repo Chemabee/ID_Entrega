@@ -17,6 +17,11 @@ class Window:
     speed_ = 60
     pause = False
 
+    RANGE = 7
+    erode_range = 13 #50
+    dilate_range = 30 #45
+    kernel_range = 15
+
     sub = cv2.createBackgroundSubtractorMOG2()
 
     state = (1,1)   #(1,1): Dentro | (1,0): Saliendo | (0,1): Entrando | (0,0): Fuera
@@ -29,20 +34,14 @@ class Window:
 
         self.MainWindow.counter.setText("Counter: " + str(self.counter))
 
-        self.MainWindow.sliderBarrera1.setRange(0, 350)
-        self.MainWindow.spinBarrera1.setRange(0, 350)
+        self.MainWindow.sliderBarrera.setRange(0, 350)
+        self.MainWindow.spinBarrera.setRange(0, 350)
 
-        self.MainWindow.sliderBarrera2.setRange(0, 350)
-        self.MainWindow.spinBarrera2.setRange(0, 350)
+        self.MainWindow.spinBarrera.setValue(100)
 
-        self.MainWindow.spinBarrera1.setValue(100)
-        self.MainWindow.spinBarrera2.setValue(100)
+        self.MainWindow.sliderBarrera.valueChanged.connect(self.change_barrier)
 
-        self.MainWindow.sliderBarrera1.valueChanged.connect(self.change_barrier)
-        self.MainWindow.sliderBarrera2.valueChanged.connect(self.change_barrier)
-
-        self.MainWindow.sliderBarrera1.setValue(155)
-        self.MainWindow.sliderBarrera2.setValue(175)
+        self.MainWindow.sliderBarrera.setValue(175)
 
         self.MainWindow.buttonPause.clicked.connect(self.onPause)
         self.MainWindow.buttonRestart.clicked.connect(self.restart)
@@ -50,6 +49,16 @@ class Window:
         self.MainWindow.buttonCloseDebug.clicked.connect(self.closeWindows)
         self.MainWindow.spinSpeed.setValue(self.speed_)
         self.MainWindow.spinSpeed.valueChanged.connect(self.speed)
+
+        self.MainWindow.spinRangeBarrier.setValue(self.RANGE)
+        self.MainWindow.spinRangeBarrier.valueChanged.connect(self.changeRange)
+        self.MainWindow.spinRangeErode.setValue(self.erode_range)
+        self.MainWindow.spinRangeErode.valueChanged.connect(self.changeErodeRange)
+        self.MainWindow.spinRangeDilate.setValue(self.dilate_range)
+        self.MainWindow.spinRangeDilate.valueChanged.connect(self.changeDilateRange)
+        self.MainWindow.spinRangeKernel.setValue(self.kernel_range)
+        self.MainWindow.spinRangeKernel.valueChanged.connect(self.changeKernelRange)
+        
 
         self.timer_frames = QtCore.QTimer(self.MainWindow)
         self.timer_frames.timeout.connect(self.gmg)#timer para refrescar la ventana
@@ -80,15 +89,22 @@ class Window:
         self.debug_ = True
 
     def change_barrier(self):
-        b1 = 350 - self.MainWindow.sliderBarrera1.value()
-        b2 = 350 - self.MainWindow.sliderBarrera2.value()
-        if b1 > b2:
-            self.MainWindow.spinBarrera1.setValue((350-self.MainWindow.sliderBarrera1.value())/350*100)
-            self.MainWindow.spinBarrera2.setValue((350-self.MainWindow.sliderBarrera2.value())/350*100)
+        self.MainWindow.spinBarrera.setValue((350-self.MainWindow.sliderBarrera.value())/350*100)
+
+    def changeRange(self):
+        self.RANGE = self.MainWindow.spinRangeBarrier.value()
+    
+    def changeErodeRange(self):
+        self.erode_range = self.MainWindow.spinRangeErode.value()
+    
+    def changeDilateRange(self):
+        self.dilate_range = self.MainWindow.spinRangeDilate.value()
+
+    def changeKernelRange(self):
+        self.kernel_range = self.MainWindow.spinRangeKernel.value()
 
     def show(self):
         self.MainWindow.show()
-    
 
     def gmg(self):
         ret, frame = self.cap.read()
@@ -107,24 +123,27 @@ class Window:
 
             diff = self.sub.apply(currGreyImg) 
 
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))  # kernel to apply to the morphology
-            
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (self.kernel_range, self.kernel_range))
+            kernelErode = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (self.erode_range, self.erode_range))  # kernel to apply to the morphology
+            kernelDilate = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (self.dilate_range, self.dilate_range))
+
             closing = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
             
             opening = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
             
-            dilation = cv2.dilate(opening, kernel)
+            dilation = cv2.dilate(opening, kernelDilate)
+
+            erode = cv2.erode(dilation, kernelErode, iterations=1)
             
             #Thresholding Difference Image
-            blurred = cv2.GaussianBlur(dilation, (5, 5), 0)
+            blurred = cv2.GaussianBlur(erode, (5, 5), 0)
             thImg = cv2.threshold(blurred, 130, 255, cv2.THRESH_BINARY)[1]
 
             #Centroid Image
             cnts = cv2.findContours(thImg.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             cnts = imutils.grab_contours(cnts)
 
-            lowerBarrier = int((35*self.MainWindow.spinBarrera1.value()/10))
-            upperBarrier = int((35*self.MainWindow.spinBarrera2.value()/10))
+            upperBarrier = int((35*self.MainWindow.spinBarrera.value()/10))
 
             if(len(cnts)!=0):
                 for c in cnts:
@@ -141,14 +160,13 @@ class Window:
                         cv2.circle(finalImg, (cX, cY), 7, (0, 0, 255), -1)
 
                         #Reescale point
-                        cY = int(cY/200 * 350)
+                        #cY = int(cY/200 * 350)
                         #Process state of point
                         
-                        self.changeState(cY, lowerBarrier, upperBarrier)
+                        self.changeState(cY, upperBarrier)
 
             finalImg = cv2.resize(finalImg, (500, 350))
             
-            cv2.line(finalImg, (0,lowerBarrier), (500,lowerBarrier), (255,0,0), thickness=3)
             cv2.line(finalImg, (0,upperBarrier), (500,upperBarrier), (0,255,0), thickness=3)
             image = QtGui.QImage(finalImg, finalImg.shape[1], finalImg.shape[0], finalImg.shape[1] * 3,QtGui.QImage.Format_RGB888)
 
@@ -166,8 +184,9 @@ class Window:
             self.closeWindows()
             self.timer_frames.stop()
 
-    def changeState(self, cY, lowerBarrier, upperBarrier): 
-        if cY > upperBarrier and cY < lowerBarrier:
+    def changeState(self, cY, upperBarrier): 
+        #if cY > upperBarrier and cY < lowerBarrier:
+        if cY > (upperBarrier-self.RANGE) and cY < (upperBarrier + self.RANGE):
             self.counter += 1
             self.MainWindow.counter.setText("Counter: " + str(self.counter))
             print(self.counter)

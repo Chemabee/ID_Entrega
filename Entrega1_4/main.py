@@ -18,14 +18,13 @@ class Window:
     pause = False
 
     RANGE = 7
-    erode_range = 13 #50
-    dilate_range = 30 #45
+    erode_range = 50
+    dilate_range = 45
     kernel_range = 15
 
     sub = cv2.createBackgroundSubtractorMOG2()
 
-    state = (1,1)   #(1,1): Dentro | (1,0): Saliendo | (0,1): Entrando | (0,0): Fuera
-    counter = 1 #Se podria poner a none y que dependiendo por donde aparezca el primer centroide te lo ponga a 1 o 0 TODO
+    counter = 0 #Se podria poner a none y que dependiendo por donde aparezca el primer centroide te lo ponga a 1 o 0 TODO
 
     def __init__(self):
         self.MainWindow = uic.loadUi('mainwindow.ui')
@@ -70,7 +69,7 @@ class Window:
 
     def restart(self):
         self.closeWindows()
-        self.counter = 1
+        self.counter = 0
         self.cap = cv2.VideoCapture('M6MotorwayTraffic_cut.mp4')
         self.timer_frames.start()
 
